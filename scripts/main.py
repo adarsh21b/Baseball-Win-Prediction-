@@ -11,11 +11,14 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 
-# References for certain libraries and plots:
-# https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html
-# https://plotly.com/python/multiple-axes/
-# https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html
-# https://plotly.com/python/plotly-express/
+"""
+References for certain libraries and plots:
+https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html
+https://plotly.com/python/multiple-axes/
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html
+https://plotly.com/python/plotly-express/
+https://stackoverflow.com/questions/5328556/histogram-matplotlib
+"""
 
 
 def read_data():
