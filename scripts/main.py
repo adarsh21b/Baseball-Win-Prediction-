@@ -1,3 +1,4 @@
+import os
 import sys
 
 import numpy as np
@@ -10,10 +11,16 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 
+# References for certain libraries and plots:
+# https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html
+# https://plotly.com/python/multiple-axes/
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html
+# https://plotly.com/python/plotly-express/
+
 
 def read_data():
     df = pd.read_csv(
-        r"/home/adarsh/Downloads/iris.data",
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data",
         names=["sepal length", "sepal width", "petal length", "petal width", "class"],
     )
 
@@ -51,11 +58,27 @@ def statistics(df):
 
 
 def graph_plot(df):
-    # Figure 1
     fig = go.Figure()
+    # figure 1
+    fig = px.scatter(
+        df,
+        x="sepal length",
+        y="sepal width",
+        size="petal length",
+        template="plotly_dark",
+        color="class",
+        title="Iris Data Set plot 1 (Sepal Width vs Sepal Length Distribution)",
+        size_max=75,
+    )
+    fig.show()
+
+    fig.write_html(file="adarsh21b-plots/" + "plot1.html", include_plotlyjs="cdn")
+
+    # Figure 2
+    fig2 = go.Figure()
     species = ["Iris-setosa", "Iris-versicolor", "Iris-virginica"]
     for i in species:
-        fig.add_trace(
+        fig2.add_trace(
             go.Violin(
                 x=df["class"][df["class"] == i],
                 y=df["petal length"][df["class"] == i],
@@ -64,46 +87,50 @@ def graph_plot(df):
                 meanline_visible=True,
             )
         )
-    fig.show()
+    fig2.show()
+    fig2.write_html(file="adarsh21b-plots/" + "plot2.html", include_plotlyjs="cdn")
 
-    # figure 2
-    fig2 = px.scatter_matrix(
+    # figure 3
+    fig3 = px.scatter_matrix(
         df,
         dimensions=["sepal length", "sepal width", "petal length", "petal width"],
         color="class",
         template="seaborn",
     )
-    fig2.update_layout(
-        title="Iris Data set",
+    fig3.update_layout(
+        title="Iris Data set plot2",
         dragmode="select",
         hovermode="closest",
     )
-    fig2.show()
+    fig3.show()
+    fig3.write_html(file="adarsh21b-plots/" + "plot3.html", include_plotlyjs="cdn")
 
-    # figure 3
+    # figure 4
     print(df.head())
-    fig3 = px.violin(
+    fig4 = px.violin(
         df,
         x="petal width",
         y="petal length",
         color="class",
         box=True,
-        title="Iris data set",
-        template="plotly_dark",
+        title="Iris data set plot 3",
+        template="seaborn",
     )
-    fig3.show()
+    fig4.show()
+    fig4.write_html(file="adarsh21b-plots/" + "plot4.html", include_plotlyjs="cdn")
 
-    # figure 4
-    fig = px.scatter(
+    # figure 5
+    fig5 = px.scatter_3d(
         df,
         x="sepal length",
         y="sepal width",
-        size="petal length",
-        template="plotly_dark",
-        color="class",
-        size_max=60,
+        z="petal width",
+        color="petal length",
+        symbol="class",
     )
-    fig.show()
+    fig3.show()
+    fig5.show()
+    fig5.write_html(file="adarsh21b-plots/" + "plot5.html", include_plotlyjs="cdn")
 
 
 def different_model(df):
@@ -130,7 +157,6 @@ def different_model(df):
     one_hot_encoder = StandardScaler()
     one_hot_encoder.fit(X_orig)
     X = one_hot_encoder.transform(X_orig)
-    print("stop0")
 
     # Fit the features to a random forest
     random_forest = RandomForestClassifier(random_state=1234)
@@ -138,22 +164,15 @@ def different_model(df):
 
     dtree = DecisionTreeClassifier()
     dtree.fit(X, y)
-
     test_df = df.sample(n=30)
-    # print_heading("Dummy data to predict")
-    # print(test_df)
     X_test_orig = test_df[
         ["sepal length", "sepal width", "petal length", "petal width"]
     ].values
     X_test = one_hot_encoder.transform(X_test_orig)
-
-    # As pipeline
-    # print_heading("Model via Pipeline Predictions")
     pipeline = Pipeline(
         [
             ("OneHotEncode", StandardScaler()),
-            ("RandomForest", RandomForestClassifier(random_state=1234))
-            # ,("DecisionTree", DecisionTreeClassifier())
+            ("RandomForest", RandomForestClassifier(random_state=1234)),
         ]
     )
     pipeline.fit(X, y)
@@ -163,16 +182,116 @@ def different_model(df):
             ("RandomForest", RandomForestClassifier(random_state=1234)),
         ]
     )
-    print("Random Score:", pipeline.score(X_test, test_df["class"]))
+    print("Random Forest Score:", pipeline.score(X_test, test_df["class"]))
+
+
+def mean_graph(df, attribute, flower_type):
+    df_new = df[[attribute, "class"]].copy()
+    arr = np.asarray(df_new[attribute])
+    new_dataframe = df_new.loc[df_new["class"] == flower_type]
+    b = np.array(new_dataframe[attribute])
+
+    countTotal, bin1 = np.histogram(arr, bins=10, range=(min(arr), max(arr)))
+    binedge = 0.5 * (bin1[:-1] + bin1[1:])
+    countspecific, bin2 = np.histogram(b, bins=bin1, range=(min(b), max(b)))
+    ratio = countspecific / countTotal
+
+    mean_variable = sum(countspecific) / sum(countTotal)
+    num_array = []
+    for i in range(len(binedge)):
+        num_array.append(mean_variable)
+
+    # bar graph
+    fig = go.Figure(
+        data=go.Bar(
+            x=binedge,
+            y=countTotal,
+            name=attribute,
+            # ),
+            marker_color="#EB89B5",
+            opacity=0.75,
+        )
+    )
+    # Line Graph
+    fig.add_trace(
+        go.Scatter(
+            x=binedge,
+            y=ratio,
+            name="Response",
+            yaxis="y2",
+            marker=dict(color="crimson"),
+        )
+    )
+
+    # Mean Line
+    fig.add_trace(
+        go.Scatter(
+            x=binedge,
+            y=num_array,
+            yaxis="y2",
+            mode="lines",
+            name="Mean_Response",
+        )
+    )
+
+    fig.update_layout(
+        title_text=flower_type + " analysis on " + attribute,
+        bargap=0.2,
+        yaxis=dict(
+            title=dict(text="Count of each bin"),
+            side="left",
+        ),
+        yaxis2=dict(
+            title=dict(text="Response"),
+            side="right",
+            tickmode="auto",
+            range=[-0.2, 1.25],
+            overlaying="y",
+        ),
+    ),
+    fig.show()
+    fig.write_html(
+        file="adarsh21b-plots/" + flower_type + "_" + attribute + ".html",
+        include_plotlyjs="cdn",
+    )
+
+
+def check_directory():
+    path = "adarsh21b-plots"
+    path_exist = os.path.exists(path)
+    if not path_exist:
+        os.mkdir(path)
 
 
 def main():
     df = read_data()  # Reading data frame
     statistics(df)  # Calling statistics function for different species
-    graph_plot(df)  # function for 5 different plots on iris dataset
+    check_directory()
+    graph_plot(df)  # function for different plots on iris dataset
     different_model(df)  # different model for iris dataset
+
+    # Plotting mean of response plot for various characteristics
+    d = {
+        "Iris-setosa": ["sepal length", "sepal width", "petal length", "petal width"],
+        "Iris-virginica": [
+            "sepal length",
+            "sepal width",
+            "petal length",
+            "petal width",
+        ],
+        "Iris-versicolor": [
+            "sepal length",
+            "sepal width",
+            "petal length",
+            "petal width",
+        ],
+    }
+    for i in range(4):
+        print(d["Iris-setosa"][i])
+        mean_graph(df, d["Iris-setosa"][i], "Iris-setosa")
+        mean_graph(df, d["Iris-virginica"][i], "Iris-virginica")
+        mean_graph(df, d["Iris-versicolor"][i], "Iris-versicolor")
 
 
 if __name__ == "__main__":
-    main()
-    sys.exit()
+    sys.exit(main())
