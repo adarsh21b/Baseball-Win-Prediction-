@@ -77,7 +77,7 @@ def graph_plot(df):
 
     fig.write_html(file="adarsh21b-plots/" + "plot1.html", include_plotlyjs="cdn")
 
-    # Figure 2
+    # Figure 2- Violin Plot
     fig2 = go.Figure()
     species = ["Iris-setosa", "Iris-versicolor", "Iris-virginica"]
     for i in species:
@@ -93,7 +93,7 @@ def graph_plot(df):
     fig2.show()
     fig2.write_html(file="adarsh21b-plots/" + "plot2.html", include_plotlyjs="cdn")
 
-    # figure 3
+    # figure 3- Scatter plot
     fig3 = px.scatter_matrix(
         df,
         dimensions=["sepal length", "sepal width", "petal length", "petal width"],
@@ -108,7 +108,7 @@ def graph_plot(df):
     fig3.show()
     fig3.write_html(file="adarsh21b-plots/" + "plot3.html", include_plotlyjs="cdn")
 
-    # figure 4
+    # figure 4- Violin PLot
     print(df.head())
     fig4 = px.violin(
         df,
@@ -122,7 +122,7 @@ def graph_plot(df):
     fig4.show()
     fig4.write_html(file="adarsh21b-plots/" + "plot4.html", include_plotlyjs="cdn")
 
-    # figure 5
+    # figure 5- Scatter 3d plot
     fig5 = px.scatter_3d(
         df,
         x="sepal length",
@@ -189,11 +189,14 @@ def different_model(df):
 
 
 def mean_graph(df, attribute, flower_type):
+
+    # creating new dataframe with desired class and attribute
     df_new = df[[attribute, "class"]].copy()
     arr = np.asarray(df_new[attribute])
     new_dataframe = df_new.loc[df_new["class"] == flower_type]
     b = np.array(new_dataframe[attribute])
 
+    # Calulating bin value for graph plotting
     countTotal, bin1 = np.histogram(arr, bins=10, range=(min(arr), max(arr)))
     binedge = 0.5 * (bin1[:-1] + bin1[1:])
     countspecific, bin2 = np.histogram(b, bins=bin1, range=(min(b), max(b)))
@@ -204,7 +207,7 @@ def mean_graph(df, attribute, flower_type):
     for i in range(len(binedge)):
         num_array.append(mean_variable)
 
-    # bar graph
+    # bar graph for attribute
     fig = go.Figure(
         data=go.Bar(
             x=binedge,
@@ -215,7 +218,7 @@ def mean_graph(df, attribute, flower_type):
             opacity=0.75,
         )
     )
-    # Line Graph
+    # Line Graph for average
     fig.add_trace(
         go.Scatter(
             x=binedge,
@@ -226,7 +229,7 @@ def mean_graph(df, attribute, flower_type):
         )
     )
 
-    # Mean Line
+    # Mean Line for desired attribute
     fig.add_trace(
         go.Scatter(
             x=binedge,
@@ -269,11 +272,12 @@ def check_directory():
 def main():
     df = read_data()  # Reading data frame
     statistics(df)  # Calling statistics function for different species
-    check_directory()
+    check_directory()  # Checking whether directory is present or not
     graph_plot(df)  # function for different plots on iris dataset
     different_model(df)  # different model for iris dataset
 
     # Plotting mean of response plot for various characteristics
+    # creating dictionary for mean response plot
     d = {
         "Iris-setosa": ["sepal length", "sepal width", "petal length", "petal width"],
         "Iris-virginica": [
@@ -294,6 +298,7 @@ def main():
         mean_graph(df, d["Iris-setosa"][i], "Iris-setosa")
         mean_graph(df, d["Iris-virginica"][i], "Iris-virginica")
         mean_graph(df, d["Iris-versicolor"][i], "Iris-versicolor")
+    # code ended for mean response plot
 
 
 if __name__ == "__main__":
