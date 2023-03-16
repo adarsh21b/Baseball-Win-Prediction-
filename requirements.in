@@ -4,3 +4,5 @@ scipy
 plotly
 scikit-learn
 pyspark
+statsmodels
+seaborn
