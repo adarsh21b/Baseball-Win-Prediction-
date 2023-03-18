@@ -6,7 +6,104 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import seaborn
+import statsmodels
+import statsmodels.api
 from sklearn import datasets
+
+
+class TestDatasets:
+    def __init__(self):
+        self.seaborn_data_sets = ["mpg", "tips", "titanic"]
+        self.seaborn_data_sets = ["titanic"]
+        self.sklearn_data_sets = ["diabetes", "breast_cancer"]
+        self.all_data_sets = self.seaborn_data_sets + self.sklearn_data_sets
+
+    TITANIC_PREDICTORS = [
+        "pclass",
+        "sex",
+        "age",
+        "sibsp",
+        "embarked",
+        "parch",
+        "fare",
+        "who",
+        "adult_male",
+        "deck",
+        "embark_town",
+        "alone",
+        "class",
+    ]
+
+    def get_all_available_datasets(self) -> List[str]:
+        return self.all_data_sets
+
+    def get_test_data_set(
+        self, data_set_name: str = None
+    ) -> Tuple[pd.DataFrame, List[str], str]:
+
+        if data_set_name is None:
+            data_set_name = random.choice(self.all_data_sets)
+        else:
+            if data_set_name not in self.all_data_sets:
+                raise Exception(f"Data set choice not valid: {data_set_name}")
+
+        if data_set_name in self.seaborn_data_sets:
+            if data_set_name == "mpg":
+                data_set = seaborn.load_dataset(name="mpg").dropna().reset_index()
+                predictors = [
+                    "cylinders",
+                    "displacement",
+                    "horsepower",
+                    "weight",
+                    "acceleration",
+                    "origin",
+                ]
+                response = "mpg"
+            elif data_set_name == "tips":
+                data_set = seaborn.load_dataset(name="tips").dropna().reset_index()
+                predictors = [
+                    "total_bill",
+                    "sex",
+                    "smoker",
+                    "day",
+                    "time",
+                    "size",
+                ]
+                response = "tip"
+            elif data_set_name in ["titanic", "titanic_2"]:
+                data_set = seaborn.load_dataset(name="titanic").dropna()
+                data_set["alone"] = data_set["alone"].astype(str)
+                data_set["class"] = data_set["class"].astype(str)
+                data_set["deck"] = data_set["deck"].astype(str)
+                data_set["pclass"] = data_set["pclass"].astype(str)
+                predictors = self.TITANIC_PREDICTORS
+                if data_set_name == "titanic":
+                    response = "survived"
+                elif data_set_name == "titanic_2":
+                    response = "alive"
+        elif data_set_name in self.sklearn_data_sets:
+            if data_set_name == "boston":
+                data = datasets.load_boston()
+                data_set = pd.DataFrame(data.data, columns=data.feature_names)
+                data_set["CHAS"] = data_set["CHAS"].astype(str)
+            elif data_set_name == "diabetes":
+                data = datasets.load_diabetes()
+                data_set = pd.DataFrame(data.data, columns=data.feature_names)
+            elif data_set_name == "breast_cancer":
+                data = datasets.load_breast_cancer()
+                data_set = pd.DataFrame(data.data, columns=data.feature_names)
+            data_set["target"] = data.target
+            predictors = data.feature_names
+            response = "target"
+
+        # Change category dtype to string
+        for predictor in predictors:
+            if data_set[predictor].dtype in ["category"]:
+                data_set[predictor] = data_set[predictor].astype(str)
+
+        print(f"Data set selected: {data_set_name}")
+        data_set.reset_index(drop=True, inplace=True)
+        return data_set, predictors, response
 
 
 def cat_response_cat_predictor(data_set, pred_col, resp_col):
@@ -116,113 +213,109 @@ def cont_response_cont_predictor(data_set, pred_col, resp_col):
     fig.show()
 
 
+def logistic_regression_scores(df, response, predictor):
+
+    column = df[predictor]
+    y = df[response]
+    logistic_regression_model = statsmodels.api.Logit(y, column)
+    logistic_regression_model_fitted = logistic_regression_model.fit()
+    print(logistic_regression_model_fitted.summary())
+    # Get the stats
+    t_value = round(logistic_regression_model_fitted.tvalues[0], 6)
+    p_value = "{:.6e}".format(logistic_regression_model_fitted.pvalues[0])
+
+    # Plot the figure
+    fig = px.scatter(x=column, y=y, trendline="ols")
+    title = f"Variable: {column.name}: (t-value={t_value}) (p-value={p_value})"
+    fig.update_layout(
+        title=title,
+        xaxis_title=f"Variable: {column.name}",
+        yaxis_title=f"Response: {y.name}",
+    )
+
+    fig.show()
+    return t_value, p_value
+
+
+def linear_regression_scores(df, response, predictor):
+    column = df[predictor]
+    y = df[response]
+    linear_regression_model = statsmodels.api.OLS(y, column)
+    linear_regression_model_fitted = linear_regression_model.fit()
+    print(linear_regression_model_fitted.summary())
+
+    # Get the stats
+    t_value = round(linear_regression_model_fitted.tvalues[0], 6)
+    p_value = "{:.6e}".format(linear_regression_model_fitted.pvalues[0])
+
+    # Plot the figure
+    fig = px.scatter(x=column, y=y, trendline="ols")
+    title = f"Variable: {column.name}: (t-value={t_value}) (p-value={p_value})"
+    fig.update_layout(
+        title=title,
+        xaxis_title=f"Variable: {column.name}",
+        yaxis_title=f"Response: {y.name}",
+    )
+
+    fig.show()
+    return t_value, p_value
+
+
 def plot_graphs(df, pred_col, pred_type, resp_col, resp_type):
     if resp_type == "Boolean":
         if pred_type == "Categorical":
             cat_response_cat_predictor(df, pred_col, resp_col)
+
         elif pred_type == "Continuous":
             cat_resp_cont_predictor(df, pred_col, resp_col)
+            t_value, p_value = logistic_regression_scores(df, resp_col, pred_col)
     elif resp_type == "Continuous":
         if pred_type == "Categorical":
             cont_resp_cat_predictor(df, pred_col, resp_col)
         elif pred_type == "Continuous":
             cont_response_cont_predictor(df, pred_col, resp_col)
+            t_value, p_value = linear_regression_scores(df, resp_col, pred_col)
     else:
         print("Invalid response type.")
 
 
-class TestDatasets:
-    def __init__(self):
-        self.seaborn_data_sets = ["mpg", "tips", "titanic"]
-        self.sklearn_data_sets = ["diabetes", "breast_cancer"]
-        self.all_data_sets = self.seaborn_data_sets + self.sklearn_data_sets
+def plot_dataset(df_list):
+    """
+    Plot graphs for each dataset in df_list.
 
-    TITANIC_PREDICTORS = [
-        "pclass",
-        "sex",
-        "age",
-        "sibsp",
-        "embarked",
-        "parch",
-        "fare",
-        "who",
-        "adult_male",
-        "deck",
-        "embark_town",
-        "alone",
-        "class",
-    ]
+    Parameters
+    ----------
+    df_list : list of tuples
+        Each tuple contains a pandas DataFrame, a list of predictor columns,
+        and a response column.
 
-    def get_all_available_datasets(self) -> List[str]:
-        return self.all_data_sets
-
-    def get_test_data_set(
-        self, data_set_name: str = None
-    ) -> Tuple[pd.DataFrame, List[str], str]:
-
-        if data_set_name is None:
-            data_set_name = random.choice(self.all_data_sets)
+    Returns
+    -------
+    None
+    """
+    for data_set, predictors, response in df_list:
+        # Determine the response type
+        if data_set[response].nunique() > 2:
+            resp_type = "Continuous"
         else:
-            if data_set_name not in self.all_data_sets:
-                raise Exception(f"Data set choice not valid: {data_set_name}")
+            resp_type = "Boolean"
 
-        if data_set_name in self.seaborn_data_sets:
-            if data_set_name == "mpg":
-                data_set = seaborn.load_dataset(name="mpg").dropna().reset_index()
-                predictors = [
-                    "cylinders",
-                    "displacement",
-                    "horsepower",
-                    "weight",
-                    "acceleration",
-                    "origin",
-                ]
-                response = "mpg"
-            elif data_set_name == "tips":
-                data_set = seaborn.load_dataset(name="tips").dropna().reset_index()
-                predictors = [
-                    "total_bill",
-                    "sex",
-                    "smoker",
-                    "day",
-                    "time",
-                    "size",
-                ]
-                response = "tip"
-            elif data_set_name in ["titanic", "titanic_2"]:
-                data_set = seaborn.load_dataset(name="titanic").dropna()
-                data_set["alone"] = data_set["alone"].astype(str)
-                data_set["class"] = data_set["class"].astype(str)
-                data_set["deck"] = data_set["deck"].astype(str)
-                data_set["pclass"] = data_set["pclass"].astype(str)
-                predictors = self.TITANIC_PREDICTORS
-                if data_set_name == "titanic":
-                    response = "survived"
-                elif data_set_name == "titanic_2":
-                    response = "alive"
-        elif data_set_name in self.sklearn_data_sets:
-            if data_set_name == "boston":
-                data = datasets.load_boston()
-                data_set = pd.DataFrame(data.data, columns=data.feature_names)
-                data_set["CHAS"] = data_set["CHAS"].astype(str)
-            elif data_set_name == "diabetes":
-                data = datasets.load_diabetes()
-                data_set = pd.DataFrame(data.data, columns=data.feature_names)
-            elif data_set_name == "breast_cancer":
-                data = datasets.load_breast_cancer()
-                data_set = pd.DataFrame(data.data, columns=data.feature_names)
-            data_set["target"] = data.target
-            predictors = data.feature_names
-            response = "target"
+        # Loop through the predictors
+        for col in predictors:
+            # Determine the predictor type
+            if isinstance(data_set[col][0], str) or data_set[col][0] in [True, False]:
+                pred_type = "Categorical"
+            else:
+                pred_type = "Continuous"
 
-        # Change category dtype to string
-        for predictor in predictors:
-            if data_set[predictor].dtype in ["category"]:
-                data_set[predictor] = data_set[predictor].astype(str)
-
-        print(f"Data set selected: {data_set_name}")
-        data_set.reset_index(drop=True, inplace=True)
-        return data_set, predictors, response
+            # Plot the graph
+            plot_graphs(
+                data_set,
+                pred_col=col,
+                pred_type=pred_type,
+                resp_col=response,
+                resp_type=resp_type,
+            )
 
 
 def main():
@@ -237,119 +330,8 @@ def main():
         df_list.append((df, predictors, response))
 
     # Get the first dataset, predictors, and response variable
-    data_set, predictors, response = df_list[0]
-
-    # Check the response variable type
-    if data_set[response].nunique() > 2:
-        resp_type = "Continuous"
-    else:
-        resp_type = "Boolean"
-
-    # Loop through the predictors
-    for col in predictors:
-
-        # Check the predictor type
-        if isinstance(data_set[col][0], str):
-            pred_type = "Categorical"
-        else:
-            pred_type = "Continuous"
-
-        # Plot graphs
-        plot_graphs(
-            data_set,
-            pred_col=col,
-            pred_type=pred_type,
-            resp_col=response,
-            resp_type=resp_type,
-        )
-
-    data_set = df_list[1][0]
-    predictors = df_list[1][1]
-    response = df_list[1][2]
-    if len(data_set[response].value_counts()) > 2:
-        resp_type = "Continuous"
-
-    elif len(data_set[response].value_counts()) == 2:
-        resp_type = "Boolean"
-
-    for col in predictors:
-        if type(data_set[col][0]) == str:
-            pred_type = "Categorical"
-        else:
-            pred_type = "Continuous"
-        plot_graphs(
-            data_set,
-            pred_col=col,
-            pred_type=pred_type,
-            resp_col=response,
-            resp_type=resp_type,
-        )
-
-    data_set = df_list[2][0]
-    predictors = df_list[2][1]
-    response = df_list[2][2]
-    if len(data_set[response].value_counts()) > 2:
-        resp_type = "Continuous"
-
-    elif len(data_set[response].value_counts()) == 2:
-        resp_type = "Boolean"
-
-    for col in predictors:
-        if type(data_set[col][0]) == str:
-            pred_type = "Categorical"
-        else:
-            pred_type = "Continuous"
-        plot_graphs(
-            data_set,
-            pred_col=col,
-            pred_type=pred_type,
-            resp_col=response,
-            resp_type=resp_type,
-        )
-
-    data_set = df_list[3][0]
-    predictors = df_list[3][1]
-    response = df_list[3][2]
-    if len(data_set[response].value_counts()) > 2:
-        resp_type = "Continuous"
-
-    elif len(data_set[response].value_counts()) == 2:
-        resp_type = "Boolean"
-
-    for col in predictors:
-        if type(data_set[col][0]) == str:
-            pred_type = "Categorical"
-        else:
-            pred_type = "Continuous"
-        plot_graphs(
-            data_set,
-            pred_col=col,
-            pred_type=pred_type,
-            resp_col=response,
-            resp_type=resp_type,
-        )
-
-    data_set = df_list[4][0]
-    predictors = df_list[4][1]
-    response = df_list[4][2]
-    if len(data_set[response].value_counts()) > 2:
-        resp_type = "Continuous"
-
-    elif len(data_set[response].value_counts()) == 2:
-        resp_type = "Boolean"
-
-    for col in predictors:
-        if type(data_set[col][0]) == str:
-            pred_type = "Categorical"
-        else:
-            pred_type = "Continuous"
-        plot_graphs(
-            data_set,
-            pred_col=col,
-            pred_type=pred_type,
-            resp_col=response,
-            resp_type=resp_type,
-        )
+    # data_set, predictors, response = df_list[0]
+    plot_dataset(df_list)
 
 
 if __name__ == "__main__":
