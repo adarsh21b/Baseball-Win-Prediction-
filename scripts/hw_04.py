@@ -1,3 +1,4 @@
+import os
 import random
 import sys
 from typing import List, Tuple
@@ -128,7 +129,10 @@ def cat_response_cat_predictor(data_set, pred_col, resp_col):
     fig = go.Figure(data=[heatmap], layout=layout)
 
     # Show the plot
-    fig.show()
+    # fig.show()
+    fig.write_html(
+        file="adarsh21b-plots/" + pred_col + "plot.html", include_plotlyjs="cdn"
+    )
 
 
 def cat_resp_cont_predictor(data_set, pred_col, resp_col):
@@ -143,7 +147,10 @@ def cat_resp_cont_predictor(data_set, pred_col, resp_col):
         xaxis_title=pred_col,
         yaxis_title="Density",
     )
-    fig_1.show()
+    # fig_1.show()
+    fig_1.write_html(
+        file="adarsh21b-plots/" + pred_col + "plot_hist.html", include_plotlyjs="cdn"
+    )
 
     # Create violin plot using plotly express
     fig_2 = px.violin(
@@ -160,7 +167,17 @@ def cat_resp_cont_predictor(data_set, pred_col, resp_col):
         xaxis_title=resp_col,
         yaxis_title=pred_col,
     )
-    fig_2.show()
+    # fig_2.show()
+    fig_2.write_html(
+        file="adarsh21b-plots/" + pred_col + "plot_violin.html", include_plotlyjs="cdn"
+    )
+
+
+def check_directory():
+    path = "adarsh21b-plots"
+    path_exist = os.path.exists(path)
+    if not path_exist:
+        os.mkdir(path)
 
 
 def cont_resp_cat_predictor(data_set, pred_col, resp_col):
@@ -200,8 +217,14 @@ def cont_resp_cat_predictor(data_set, pred_col, resp_col):
     )
 
     # Show the plots
-    fig_1.show()
-    fig_2.show()
+    # fig_1.show()
+    fig_1.write_html(
+        file="adarsh21b-plots/" + pred_col + "plot_hist.html", include_plotlyjs="cdn"
+    )
+    # fig_2.show()
+    fig_2.write_html(
+        file="adarsh21b-plots/" + pred_col + "plot_violin.html", include_plotlyjs="cdn"
+    )
 
 
 def cont_response_cont_predictor(data_set, pred_col, resp_col):
@@ -211,7 +234,10 @@ def cont_response_cont_predictor(data_set, pred_col, resp_col):
         xaxis_title=pred_col,
         yaxis_title=resp_col,
     )
-    fig.show()
+    # fig.show()
+    fig.write_html(
+        file="adarsh21b-plots/" + pred_col + "plot.html", include_plotlyjs="cdn"
+    )
 
 
 def logistic_regression_scores(df, response, predictor):
@@ -234,7 +260,10 @@ def logistic_regression_scores(df, response, predictor):
         yaxis_title=f"Response: {y.name}",
     )
 
-    fig.show()
+    # fig.show()
+    fig.write_html(
+        file="adarsh21b-plots/" + predictor + "plot.html", include_plotlyjs="cdn"
+    )
     return t_value, p_value
 
 
@@ -258,7 +287,10 @@ def linear_regression_scores(df, response, predictor):
         yaxis_title=f"Response: {y.name}",
     )
 
-    fig.show()
+    # fig.show()
+    fig.write_html(
+        file="adarsh21b-plots/" + predictor + "plot.html", include_plotlyjs="cdn"
+    )
     return t_value, p_value
 
 
@@ -345,6 +377,7 @@ def plot_dataset(df_list):
 
 
 def main():
+    check_directory()
     df_list = []
 
     # Get all available datasets from TestDatasets class and loop through them
