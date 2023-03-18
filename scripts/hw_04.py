@@ -9,6 +9,7 @@ import seaborn
 import statsmodels
 import statsmodels.api
 from sklearn import datasets
+from sklearn.ensemble import RandomForestRegressor
 
 
 class TestDatasets:
@@ -279,6 +280,29 @@ def plot_graphs(df, pred_col, pred_type, resp_col, resp_type):
         print("Invalid response type.")
 
 
+def random_forest(df, continuous_predictors, response):
+    X = df[continuous_predictors]
+    y = df[response]
+
+    # create a random forest regressor
+    model = RandomForestRegressor(random_state=42)
+
+    # Fit the model into the data
+    model.fit(X, y)
+
+    importances = model.feature_importances_
+
+    feature_importances = pd.DataFrame(
+        {"predictor": continuous_predictors, "importance": importances}
+    )
+
+    feature_importances = dict(zip(continuous_predictors, model.feature_importances_))
+
+    print(feature_importances)
+
+    return feature_importances
+
+
 def plot_dataset(df_list):
     """
     Plot graphs for each dataset in df_list.
@@ -300,6 +324,7 @@ def plot_dataset(df_list):
         else:
             resp_type = "Boolean"
 
+        cont_pred = []
         # Loop through the predictors
         for col in predictors:
             # Determine the predictor type
@@ -307,7 +332,7 @@ def plot_dataset(df_list):
                 pred_type = "Categorical"
             else:
                 pred_type = "Continuous"
-
+                cont_pred.append(col)
             # Plot the graph
             plot_graphs(
                 data_set,
@@ -316,6 +341,7 @@ def plot_dataset(df_list):
                 resp_col=response,
                 resp_type=resp_type,
             )
+        random_forest(data_set, cont_pred, response)
 
 
 def main():
