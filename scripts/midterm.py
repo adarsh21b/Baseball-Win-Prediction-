@@ -1091,10 +1091,8 @@ def categorical_cate(df, categorical_predictors, response_df):
     combinations = []
     for i in range(len(categorical_predictors)):
         for j in range(len(categorical_predictors)):
-            if categorical_predictors[i] != categorical_predictors[j]:
-                combinations.append(
-                    (categorical_predictors[i], categorical_predictors[j])
-                )
+            # if categorical_predictors[i] != categorical_predictors[j]:
+            combinations.append((categorical_predictors[i], categorical_predictors[j]))
     print("combinations")
     print(combinations)
 
