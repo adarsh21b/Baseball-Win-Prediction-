@@ -405,7 +405,6 @@ def continuous_cont(df, continous_predictors, response_df, response):
             "Predictor 1": pair[0],
             "Predictor 2": pair[1],
             "Pearson's Correlation value": corr,
-            "Abs Correlation value": abs(corr),
         }
 
         # print(pair[0])
@@ -419,7 +418,7 @@ def continuous_cont(df, continous_predictors, response_df, response):
     figure = correlation_matrix(
         score_pearson["Predictor 1"],
         score_pearson["Predictor 2"],
-        score_pearson["Correlation value"],
+        score_pearson["Pearson's Correlation value"],
         "Correlation Pearson's Matrix",
     )
 
