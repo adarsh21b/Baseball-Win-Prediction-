@@ -748,7 +748,7 @@ def categorical_conti(df, categorical_predictors, continous_pred):
 
         with open("adarsh_midterm.html", "a") as f:
             f.write(figure)
-        return combinations
+        return score_df
 
 
 def mean_of_response_cont_cat(df, predictor, response):
@@ -1479,9 +1479,12 @@ def main():
             l2.append(mean_dict)
 
     mean_df_cat_pred = pd.DataFrame(l2)
-
+    score_df_corr = pd.DataFrame()
     if len(categorical_predictors) > 0 and len(continuous_predictors) > 0:
-        categorical_conti(df, categorical_predictors, continuous_predictors)
+        score_df_corr = categorical_conti(
+            df, categorical_predictors, continuous_predictors
+        )
+        print(score_df_corr.columns)
 
     # Merging the dataframes for cramer's table
     merge_cat_cat_correlation_dataframes_c(
@@ -1513,6 +1516,15 @@ def main():
         "Brute_Force_Continuous_Continuous",
     )
     # brute_force_cat_cont_df = brute_force_cat_cont_mean_heatmap(df, cate_df,cont_df, response)
+
+    # merged_df = pd.merge(
+    #     brute_force_cat_cont_df, score_df_corr, on=["Predictor 1", "Predictor 2"]
+    # )
+    # save_dataframe_to_html_bruteforce(
+    #     merged_df,
+    #     "path",
+    #     "Brute_Force_Categorical_Continuous",
+    # )
 
 
 if __name__ == "__main__":
