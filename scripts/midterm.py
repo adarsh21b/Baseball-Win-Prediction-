@@ -932,76 +932,75 @@ def brute_force_cont_cont_mean_heatmap(df, combinations, response):
     scores = []
     combinations = [(x, y) for (x, y) in combinations if x != y]
     print("combinations")
-    print(combinations)
     for i in range(len(combinations)):
-        cont_pred_1 = combinations[i][0]
-        cont_pred_2 = combinations[i][1]
+        pred_1, pred_2 = combinations[i]
 
-        df_temp = df.copy()
         bins = 10
-        cont_pred_1_bins = pd.cut(df_temp[cont_pred_1], bins=bins, right=True).apply(
+        df_new = df.copy()
+        df_new["bins1"] = pd.cut(df_new[pred_1], bins=bins, right=True).apply(
             lambda x: x.mid
         )
-
-        cont_pred_2_bins = pd.cut(df_temp[cont_pred_2], bins=bins, right=True).apply(
+        df_new["bins2"] = pd.cut(df_new[pred_2], bins=bins, right=True).apply(
             lambda x: x.mid
         )
-
-        df_temp = (
-            df_temp.groupby([cont_pred_1_bins, cont_pred_2_bins])[response]
-            .agg(["mean", "size"])
-            .reset_index()
-            .rename(columns={"mean": response + "mean", "size": response + "size"})
+        df_new = df_new[[pred_1, pred_2, "bins1", "bins2", response]]
+        df_new = df_new.groupby(["bins1", "bins2"]).agg(["mean", "size"]).reset_index()
+        df_new.columns = df_new.columns.to_flat_index().map("".join)
+        print("****************************lalala**************")
+        print(df_new.columns)
+        df_new["unweighted"] = (
+            df_new[response + "mean"]
+            .to_frame()
+            .apply(lambda x: (df[response].mean() - x) ** 2)
+        )
+        df_new["weighted"] = df_new.apply(
+            lambda x: (x[response + "size"] / df_new[response + "size"].sum())
+            * x["unweighted"],
+            axis=1,
+        )
+        df_new["meansize"] = df_new.apply(
+            lambda x: "{:.3f} (pop:{})".format(
+                x[response + "mean"], x[response + "size"]
+            ),
+            axis=1,
         )
 
-        df_temp["unweighted"] = (df_temp[response + "mean"] - df[response].mean()) ** 2
-        df_temp["weighted"] = (
-            df_temp["unweighted"]
-            * df_temp[response + "size"]
-            / df_temp[response + "size"].sum()
-        )
-        df_temp["mean_size"] = (
-            df_temp[response + "mean"].round(3).astype(str)
-            + " (pop:"
-            + df_temp[response + "size"].astype(str)
-            + ")"
-        )
+        print(df_new)
+        print(df_new.columns)
 
-        unweighted = df_temp["unweighted"].sum() / len(df_temp)
-        weighted = df_temp["weighted"].sum()
+        weighted = df_new["weighted"].sum()
+        unweighted = df_new["unweighted"].sum() / len(df_new)
 
         heatmap = go.Heatmap(
-            x=np.array(df_temp[cont_pred_1]),
-            y=np.array(df_temp[cont_pred_2]),
-            z=np.array(df_temp[response + "mean"]),
-            text=np.array(df_temp["mean_size"]),
+            x=np.array(df_new["bins1"]),
+            y=np.array(df_new["bins2"]),
+            z=np.array(df_new[response + "mean"]),
+            text=np.array(df_new["meansize"]),
             colorscale="Blues",
             texttemplate="%{text}",
         )
 
         # Define the layout of the plot
         layout = go.Layout(
-            title=f"{cont_pred_1} vs {cont_pred_2} (Bin Averages)",
-            xaxis=dict(title=cont_pred_1),
-            yaxis=dict(title=cont_pred_2),
+            title=f"{pred_1} vs {pred_2} (Bin Averages)",
+            xaxis=dict(title=pred_1),
+            yaxis=dict(title=pred_2),
         )
 
         fig = go.Figure(data=[heatmap], layout=layout)
-        file = f"adarsh21b-plots/{cont_pred_1}vs{cont_pred_2}heatmap.html"
+        file = f"adarsh21b-plots/{pred_1}vs{pred_2}heatmap.html"
         fig.write_html(file=file, include_plotlyjs="cdn")
 
-        # fig.show()
-
         final_dict = {
-            "Predictor 1": cont_pred_1,
-            "Predictor 2": cont_pred_2,
+            "Predictor 1": pred_1,
+            "Predictor 2": pred_2,
             "diff_mean_resp_ranking": unweighted,
             "diff_mean_resp_weighted_ranking": weighted,
             "path": file,
         }
         scores.append(final_dict)
-        mean_df = pd.DataFrame(scores)
 
+    mean_df = pd.DataFrame(scores)
     return mean_df
 
 
@@ -1497,19 +1496,22 @@ def main():
         t_df,
         on=["Predictor 1", "Predictor 2"],
     )
+
     save_dataframe_to_html_bruteforce(
         merged_df,
-        "Heatmap_plot",
+        "path",
         "Brute_Force_Categorical_Categorical",
     )
 
-    # brute_force_cont_cont_df = brute_force_cont_cont_mean_heatmap(df, cont_df, response)
-    # merged_df = pd.merge(brute_force_cont_cont_df, pearson_df, on=['Predictor 1', 'Predictor 2'], how='left')
-    # save_dataframe_to_html_bruteforce(
-    #     merged_df,
-    #     "Heatmap_plot",
-    #     "Brute_Force_Continuous_Continuous",
-    # )
+    brute_force_cont_cont_df = brute_force_cont_cont_mean_heatmap(df, cont_df, response)
+    merged_df = pd.merge(
+        brute_force_cont_cont_df, pearson_df, on=["Predictor 1", "Predictor 2"]
+    )
+    save_dataframe_to_html_bruteforce(
+        merged_df,
+        "path",
+        "Brute_Force_Continuous_Continuous",
+    )
     # brute_force_cat_cont_df = brute_force_cat_cont_mean_heatmap(df, cate_df,cont_df, response)
 
 
