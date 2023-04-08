@@ -993,8 +993,8 @@ def brute_force_cont_cont_mean_heatmap(df, combinations, response):
         # fig.show()
 
         final_dict = {
-            "cont_1": cont_pred_1,
-            "cont_2": cont_pred_2,
+            "Predictor 1": cont_pred_1,
+            "Predictor 2": cont_pred_2,
             "diff_mean_resp_ranking": unweighted,
             "diff_mean_resp_weighted_ranking": weighted,
             "path": file,
@@ -1010,7 +1010,7 @@ def brute_force_cont_cont_mean_heatmap(df, combinations, response):
 #     combinations = [(x, y) for (x, y) in combinations if x != y]
 #     print("combinations")
 #     print(combinations)
-#     df_temp = df
+
 #     for i in range(len(combinations)):
 #         cat_pred= combinations[i][0]
 #         cont_pred = combinations[i][1]
@@ -1076,8 +1076,8 @@ def brute_force_cat_cat_mean_heatmap(df, combinations, response):
 
         # fig.show()
         final_dict = {
-            "cont_1": cat_pred_1,
-            "cont_2": cat_pred_2,
+            "Predictor 1": cat_pred_1,
+            "Predictor 2": cat_pred_2,
             "diff_mean_resp_ranking": unweighted,
             "diff_mean_resp_weighted_ranking": weighted,
             "path": file,
@@ -1306,6 +1306,50 @@ def merge_cat_cat_correlation_dataframes_t(df_tschuprow, df_mean_cat, df_mean_co
     )
 
 
+def save_dataframe_to_html_bruteforce(df, link, caption):
+    def make_clickable(link):
+        return f'<a href="{link}" target="_blank">{link}</a>'
+
+    # Apply styles to the DataFrame using the Styler class
+    styles = [
+        {"selector": "table", "props": [("border-collapse", "collapse")]},
+        {
+            "selector": "th",
+            "props": [
+                ("background-color", "#88bde6"),
+                ("text-align", "center"),
+                ("color", "white"),
+            ],
+        },
+        {
+            "selector": "th, td",
+            "props": [("padding", "10px"), ("border", "2px solid #c4d4e3")],
+        },
+        {"selector": "tr:nth-child(even)", "props": [("background-color", "#f2f2f2")]},
+        {"selector": "tr:hover", "props": [("background-color", "#e6f2ff")]},
+    ]
+    # Format the columns with clickable links
+    df_styled = df.style.format({link: make_clickable})
+
+    # Apply table styles and add a caption
+    df_styled.set_table_styles(styles).set_caption(
+        f"<h1 style='text-align:center; font-size:30px; color:#88bde6;'>{caption}</h1>"
+    )
+
+    # Format the columns with clickable links
+    df_styled = df.style.format({link: make_clickable})
+
+    # Apply table styles and add a caption
+    df_styled.set_table_styles(styles).set_caption(
+        f"<h2 style='text-align:center; font-size:25px;'>{caption}</h1>"
+    )
+    # Generate an HTML table from the styled DataFrame
+    html_table = df_styled.to_html()
+
+    with open("adarsh_midterm.html", "a") as f:
+        f.write(html_table)
+
+
 def save_dataframe_to_html(df, plot_link_mor, plot_link, caption):
     def make_clickable(link):
         return f'<a href="{link}" target="_blank">{link}</a>'
@@ -1447,9 +1491,25 @@ def main():
     merge_cat_cat_correlation_dataframes_t(t_df, mean_df_cat_pred, mean_df_cont_pred)
 
     # Brute Force
+    brute_force_mean_df = brute_force_cat_cat_mean_heatmap(df, cate_df, response)
+    merged_df = pd.merge(
+        pd.merge(brute_force_mean_df, cramer_df, on=["Predictor 1", "Predictor 2"]),
+        t_df,
+        on=["Predictor 1", "Predictor 2"],
+    )
+    save_dataframe_to_html_bruteforce(
+        merged_df,
+        "Heatmap_plot",
+        "Brute_Force_Categorical_Categorical",
+    )
 
-    # brute_force_mean_df = brute_force_cat_cat_mean_heatmap(df, cate_df, response)
     # brute_force_cont_cont_df = brute_force_cont_cont_mean_heatmap(df, cont_df, response)
+    # merged_df = pd.merge(brute_force_cont_cont_df, pearson_df, on=['Predictor 1', 'Predictor 2'], how='left')
+    # save_dataframe_to_html_bruteforce(
+    #     merged_df,
+    #     "Heatmap_plot",
+    #     "Brute_Force_Continuous_Continuous",
+    # )
     # brute_force_cat_cont_df = brute_force_cat_cont_mean_heatmap(df, cate_df,cont_df, response)
 
 
