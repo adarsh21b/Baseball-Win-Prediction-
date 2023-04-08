@@ -946,7 +946,7 @@ def brute_force_cont_cont_mean_heatmap(df, combinations, response):
         df_new = df_new[[pred_1, pred_2, "bins1", "bins2", response]]
         df_new = df_new.groupby(["bins1", "bins2"]).agg(["mean", "size"]).reset_index()
         df_new.columns = df_new.columns.to_flat_index().map("".join)
-        print("****************************lalala**************")
+
         print(df_new.columns)
         df_new["unweighted"] = (
             df_new[response + "mean"]
