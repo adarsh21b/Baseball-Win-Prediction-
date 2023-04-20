@@ -748,7 +748,7 @@ def categorical_conti(df, categorical_predictors, continous_pred):
 
         with open("adarsh_midterm.html", "a") as f:
             f.write(figure)
-        return score_df
+    return score_df, combinations
 
 
 def mean_of_response_cont_cat(df, predictor, response):
@@ -1004,15 +1004,104 @@ def brute_force_cont_cont_mean_heatmap(df, combinations, response):
     return mean_df
 
 
-# def brute_force_cat_cont_mean_heatmap(df, categorical,cont,  response):
+# def brute_force_cat_cont_mean_heatmap(df, combinations,  response):
+#     print(" Inside cat _cont brute force ")
 #     scores = []
 #     combinations = [(x, y) for (x, y) in combinations if x != y]
 #     print("combinations")
 #     print(combinations)
-
 #     for i in range(len(combinations)):
-#         cat_pred= combinations[i][0]
+#         cat_pred = combinations[i][0]
 #         cont_pred = combinations[i][1]
+#
+#         print(cat_pred)
+#         print("===================")
+#         print(cont_pred)
+
+#     # Create bins for the continuous predictor
+#     df['bins'] = pd.cut(df[cont_pred], bins=10, right=True).apply(lambda x: x.mid)
+#
+#     # Group the data by the categorical predictor and bins
+#     grouped = df.groupby([cat_pred, cont_pred, 'bins']).agg({response: ['mean', 'size']}).reset_index()
+#     grouped.columns = [cat_pred, cont_pred, 'bins', 'response_mean', 'response_size']
+#
+#     # Calculate unweighted score
+#
+#     unweighted = ((grouped['response_mean'] - df[response].mean()) ** 2).sum() / len(df)
+#
+#     # Calculate weighted score
+#     grouped['weight'] = grouped['response_size'] / grouped['response_size'].sum()
+#     grouped['weighted_diff'] = grouped['weight'] * ((grouped['response_mean'] - df[response].mean()) ** 2)
+#     weighted = grouped['weighted_diff'].sum()
+#
+#     print("unweighted-------------------")
+#     print(unweighted)
+#     print("weighted-----------------------")
+#     print(weighted)
+#
+#     final_dict = {
+#         "cont_1": cat_pred,
+#         "cont_2": cont_pred,
+#         "diff_mean_resp_ranking": unweighted,
+#         "diff_mean_resp_weighted_ranking": weighted,
+#     }
+#     scores.append(final_dict)
+#     mean_df = pd.DataFrame(scores)
+#
+# return mean_df
+#     COLUMN_NAMES = {
+#
+#         "BF_UNWEIGHTED": "bf_unweighted",
+#         "BF_WEIGHTED": "bf_weighted",
+#         "MEAN_SIZE": "mean_size",
+#     }
+#
+#     def create_bins(df, column):
+#         return pd.qcut(df[column], q=10, duplicates="drop")
+#
+#     def calculate_bf_unweighted(df, response):
+#         response_mean = f"{response}_mean"
+#         print(df)
+#         print(response)
+#         print(df[response])
+#         df_mean = df[response].mean()
+#         df[COLUMN_NAMES["BF_UNWEIGHTED"]] = (df[response_mean] - df_mean).pow(2)
+#         return df
+#
+#     def calculate_bf_weighted(df, response):
+#         response_mean = f"{response}_mean"
+#         response_size = f"{response}_size"
+#         bf_unweighted = COLUMN_NAMES["BF_UNWEIGHTED"]
+#         df[COLUMN_NAMES["BF_WEIGHTED"]] = (
+#                 df[response_size] / df[response_size].sum() * df[bf_unweighted]
+#         )
+#         return df
+#
+#     def format_mean_size(df, response):
+#         response_mean = f"{response}_mean"
+#         response_size = f"{response}_size"
+#         df[COLUMN_NAMES["MEAN_SIZE"]] = df.apply(
+#             lambda row: f"{row[response_mean]:.3f} (pop:{row[response_size]})",
+#             axis=1,
+#         )
+#         return df
+#
+#     def process_dataframe(df, cat_pred, cont_pred, response):
+#         print(cat_pred)
+#         print(cont_pred)
+#         cont_pred_bins = f"{cont_pred}_bins"
+#         df[cont_pred_bins] = create_bins(df, cont_pred).apply(lambda x: x.mid)
+#         df = df.groupby([cat_pred, cont_pred_bins])[response].agg(["mean", "size"]).reset_index()
+#         df = df.rename(columns={"mean": f"{response}_mean", "size": f"{response}_size"})
+#         df = calculate_bf_unweighted(df, response)
+#         df = calculate_bf_weighted(df, response)
+#         df = format_mean_size(df, response)
+#         return df
+#
+#     df_new= process_dataframe(df, cat_pred, cont_pred, response)
+#
+#     print(df_new)
+#     return df_new
 
 
 def brute_force_cat_cat_mean_heatmap(df, combinations, response):
@@ -1479,7 +1568,7 @@ def main():
     mean_df_cat_pred = pd.DataFrame(l2)
     score_df_corr = pd.DataFrame()
     if len(categorical_predictors) > 0 and len(continuous_predictors) > 0:
-        score_df_corr = categorical_conti(
+        score_df_corr, combinations_cat_cont = categorical_conti(
             df, categorical_predictors, continuous_predictors
         )
         print(score_df_corr.columns)
@@ -1514,6 +1603,8 @@ def main():
         "Brute_Force_Continuous_Continuous",
     )
     # brute_force_cat_cont_df = brute_force_cat_cont_mean_heatmap(df, cate_df,cont_df, response)
+
+    # brute_force_cat_cont_df = brute_force_cat_cont_mean_heatmap(df, combinations_cat_cont, response)
 
     # merged_df = pd.merge(
     #     brute_force_cat_cont_df, score_df_corr, on=["Predictor 1", "Predictor 2"]
