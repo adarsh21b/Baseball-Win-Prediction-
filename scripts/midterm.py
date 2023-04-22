@@ -471,6 +471,8 @@ def mean_of_response_cat_cat(df, predictor, response_df, response):
 
 
 def mean_of_response_cont_cont(df, predictor, response_df, response):
+
+    print("INdside mean of respp cont cont ==========")
     bin_count = 10
     bins = pd.cut(df[predictor], bin_count).apply(lambda x: x.mid)
     bins_mod = np.sort(np.array(bins.unique()))
@@ -499,7 +501,7 @@ def mean_of_response_cont_cont(df, predictor, response_df, response):
             y=bin_population,
             name=predictor,
             marker_color="#EB89B5",
-            opacity=0.75,
+            opacity=0.65,
             yaxis="y1",
         )
     )
@@ -548,7 +550,7 @@ def mean_of_response_cont_cont(df, predictor, response_df, response):
         xaxis=dict(title=dict(text="Predictor Bins")),
     )
 
-    # fig.show()
+    fig.show()
 
     file = f"adarsh21b-plots/{predictor}vs{response}morp.html"
     fig.write_html(file=file, include_plotlyjs="cdn")
@@ -1420,6 +1422,50 @@ def build_model(df, predictors, response):
     print("Logistic Regression Score : ", clf.score(X_test, y_test))
 
 
+def save_dataframe_to_html_pearson(df, plot_link, caption):
+    def make_clickable(link):
+        return f'<a href="{link}" target="_blank">{link}</a>'
+
+    # Apply styles to the DataFrame using the Styler class
+    styles = [
+        {"selector": "table", "props": [("border-collapse", "collapse")]},
+        {
+            "selector": "th",
+            "props": [
+                ("background-color", "#88bde6"),
+                ("text-align", "center"),
+                ("color", "white"),
+            ],
+        },
+        {
+            "selector": "th, td",
+            "props": [("padding", "10px"), ("border", "2px solid #c4d4e3")],
+        },
+        {"selector": "tr:nth-child(even)", "props": [("background-color", "#f2f2f2")]},
+        {"selector": "tr:hover", "props": [("background-color", "#e6f2ff")]},
+    ]
+    # Format the columns with clickable links
+    df_styled = df.style.format({plot_link: make_clickable})
+
+    # Apply table styles and add a caption
+    df_styled.set_table_styles(styles).set_caption(
+        f"<h1 style='text-align:center; font-size:30px; color:#88bde6;'>{caption}</h1>"
+    )
+
+    # Format the columns with clickable links
+    df_styled = df.style.format({plot_link: make_clickable})
+
+    # Apply table styles and add a caption
+    df_styled.set_table_styles(styles).set_caption(
+        f"<h2 style='text-align:center; font-size:25px;'>{caption}</h1>"
+    )
+    # Generate an HTML table from the styled DataFrame
+    html_table = df_styled.to_html()
+
+    with open("adarsh_midterm.html", "a") as f:
+        f.write(html_table)
+
+
 def main():
     check_directory()
     # test_datasets = TestDatasets()
@@ -1488,20 +1534,30 @@ def main():
         cont_df, score_df, rf_score_df, pearson_df = continuous_cont(
             df, continuous_predictors, response_df, response
         )
+        print(pearson_df.columns)
 
     l1 = []
 
     for i in range(len(continuous_predictors)):
-        predictor = continuous_predictors[i]
+        pred = continuous_predictors[i]
         if check_response(df, response) == "Continuous":
-            mean_dict = mean_of_response_cont_cont(df, predictor, response_df, response)
+            mean_dict = mean_of_response_cont_cont(df, pred, response_df, response)
             l1.append(mean_dict)
         else:
-            mean_dict = mean_of_response_cont_cat(df, predictor, response)
+            mean_dict = mean_of_response_cont_cat(df, pred, response)
             l1.append(mean_dict)
 
     mean_df_cont_pred = pd.DataFrame(l1)
-    print(mean_df_cont_pred)
+    merged_df = pd.merge(
+        mean_df_cont_pred, pearson_df, left_on="predictor", right_on="Predictor 1"
+    )
+    merged_df = merged_df.drop("Predictor 1", axis=1)
+    merged_df = merged_df.rename(columns={"Predictor 2": "predictor_2"})
+    merged_df = merged_df[
+        ["predictor", "predictor_2", "Pearson's Correlation value", "path"]
+    ]
+
+    save_dataframe_to_html_pearson(merged_df, "path", "Correlation Pearson's Table")
 
     l2 = []
     cate_df = pd.DataFrame()
@@ -1537,46 +1593,46 @@ def main():
             t_df, mean_df_cat_pred, mean_df_cont_pred
         )
 
-        # Brute Force
-        brute_force_mean_df = brute_force_cat_cat_mean_heatmap(df, cate_df, response)
-        merged_df = pd.merge(
-            pd.merge(brute_force_mean_df, cramer_df, on=["Predictor 1", "Predictor 2"]),
-            t_df,
-            on=["Predictor 1", "Predictor 2"],
-        )
+        # # Brute Force
+        # brute_force_mean_df = brute_force_cat_cat_mean_heatmap(df, cate_df, response)
+        # merged_df = pd.merge(
+        #     pd.merge(brute_force_mean_df, cramer_df, on=["Predictor 1", "Predictor 2"]),
+        #     t_df,
+        #     on=["Predictor 1", "Predictor 2"],
+        # )
+        #
+        # save_dataframe_to_html_bruteforce(
+        #     merged_df,
+        #     "path",
+        #     "Brute_Force_Categorical_Categorical",
+        # )
 
-        save_dataframe_to_html_bruteforce(
-            merged_df,
-            "path",
-            "Brute_Force_Categorical_Categorical",
-        )
-
-    if len(continuous_predictors) > 0:
-        brute_force_cont_cont_df = brute_force_cont_cont_mean_heatmap(
-            df, cont_df, response
-        )
-        merged_df = pd.merge(
-            brute_force_cont_cont_df, pearson_df, on=["Predictor 1", "Predictor 2"]
-        )
-        save_dataframe_to_html_bruteforce(
-            merged_df,
-            "path",
-            "Brute_Force_Continuous_Continuous",
-        )
-
-    if len(continuous_predictors) > 0 and len(categorical_predictors) > 0:
-        brute_force_cat_cont_df = brute_force_cat_cont_mean_heatmap(
-            df, combinations_cat_cont, response
-        )
-
-        merged_df = pd.merge(
-            brute_force_cat_cont_df, score_df_corr, on=["Predictor 1", "Predictor 2"]
-        )
-        save_dataframe_to_html_bruteforce(
-            merged_df,
-            "path",
-            "Brute_Force_Categorical_Continuous",
-        )
+    # if len(continuous_predictors) > 0:
+    #     brute_force_cont_cont_df = brute_force_cont_cont_mean_heatmap(
+    #         df, cont_df, response
+    #     )
+    #     merged_df = pd.merge(
+    #         brute_force_cont_cont_df, pearson_df, on=["Predictor 1", "Predictor 2"]
+    #     )
+    #     save_dataframe_to_html_bruteforce(
+    #         merged_df,
+    #         "path",
+    #         "Brute_Force_Continuous_Continuous",
+    #     )
+    #
+    # if len(continuous_predictors) > 0 and len(categorical_predictors) > 0:
+    #     brute_force_cat_cont_df = brute_force_cat_cont_mean_heatmap(
+    #         df, combinations_cat_cont, response
+    #     )
+    #
+    #     merged_df = pd.merge(
+    #         brute_force_cat_cont_df, score_df_corr, on=["Predictor 1", "Predictor 2"]
+    #     )
+    #     save_dataframe_to_html_bruteforce(
+    #         merged_df,
+    #         "path",
+    #         "Brute_Force_Categorical_Continuous",
+    #     )
 
     # Training model and features
 
