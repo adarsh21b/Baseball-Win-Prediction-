@@ -20,6 +20,24 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
+"""
+References:
+https://en.wikipedia.org/wiki/Baseball_statistics
+https://teaching.mrsharky.com/sdsu_fall_2020_lecture11.html#/9/1
+https://www.mlb.com/glossary/standard-stats/walk
+https://www.mlb.com/glossary/standard-stats/walks-and-hits-per-inning-pitched
+https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html
+https://plotly.com/python/multiple-axes/
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html
+https://plotly.com/python/plotly-express/
+https://stackoverflow.com/questions/5328556/histogram-matplotlib
+https://pandas.pydata.org/docs/reference/api/pandas.cut.html
+https://www.geeksforgeeks.org/pandas-cut-method-in-python/#
+https://plotly.com/python/heatmaps/
+https://www.w3schools.com/sql/sql_case.asp
+
+"""
+
 
 def cat_correlation(x, y, bias_correction=True, tschuprow=False):
     """
