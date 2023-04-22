@@ -1,131 +1,24 @@
 import os
-import random
 import sys
 import warnings
-from typing import List, Tuple
 
 import numpy as np
 import pandas
 import pandas as pd
 import plotly.io as pio
-import seaborn
+import sqlalchemy
 import statsmodels
 import statsmodels.api
-from pandas.compat import numpy
 from plotly import express as px
 from plotly import graph_objects as go
 from scipy import stats
 from scipy.stats import pearsonr
-from sklearn import datasets
-from sklearn.ensemble import RandomForestRegressor
-
-
-class TestDatasets:
-    def __init__(self):
-        self.seaborn_data_sets = ["mpg", "tips", "titanic"]
-        self.sklearn_data_sets = ["diabetes", "breast_cancer"]
-        self.all_data_sets = self.seaborn_data_sets + self.sklearn_data_sets
-
-    TITANIC_PREDICTORS = [
-        "pclass",
-        "sex",
-        "age",
-        "sibsp",
-        "embarked",
-        "parch",
-        "fare",
-        "who",
-        "adult_male",
-        "deck",
-        "embark_town",
-        "alone",
-        "class",
-    ]
-
-    def get_all_available_datasets(self) -> List[str]:
-        return self.all_data_sets
-
-    def get_test_data_set(
-        self, data_set_name: str = None
-    ) -> Tuple[pandas.DataFrame, List[str], str]:
-        """Function to load a few test data sets
-
-        :param:
-        data_set_name : string, optional
-            Data set to load
-
-        :return:
-        data_set : :class:`pandas.DataFrame`
-            Tabular data, possibly with some preprocessing applied.
-        predictors :list[str]
-            List of predictor variables
-        response: str
-            Response variable
-        """
-
-        if data_set_name is None:
-            data_set_name = random.choice(self.all_data_sets)
-        else:
-            if data_set_name not in self.all_data_sets:
-                raise Exception(f"Data set choice not valid: {data_set_name}")
-
-        if data_set_name in self.seaborn_data_sets:
-            if data_set_name == "mpg":
-                data_set = seaborn.load_dataset(name="mpg").dropna().reset_index()
-                predictors = [
-                    "cylinders",
-                    "displacement",
-                    "horsepower",
-                    "weight",
-                    "acceleration",
-                    "origin",
-                ]
-                response = "mpg"
-            elif data_set_name == "tips":
-                data_set = seaborn.load_dataset(name="tips").dropna().reset_index()
-                predictors = [
-                    "total_bill",
-                    "sex",
-                    "smoker",
-                    "day",
-                    "time",
-                    "size",
-                ]
-                response = "tip"
-            elif data_set_name in ["titanic", "titanic_2"]:
-                data_set = seaborn.load_dataset(name="titanic").dropna()
-                data_set["alone"] = data_set["alone"].astype(str)
-                data_set["class"] = data_set["class"].astype(str)
-                data_set["deck"] = data_set["deck"].astype(str)
-                data_set["pclass"] = data_set["pclass"].astype(str)
-                predictors = self.TITANIC_PREDICTORS
-                if data_set_name == "titanic":
-                    response = "survived"
-                elif data_set_name == "titanic_2":
-                    response = "alive"
-        elif data_set_name in self.sklearn_data_sets:
-            if data_set_name == "boston":
-                data = datasets.load_boston()
-                data_set = pandas.DataFrame(data.data, columns=data.feature_names)
-                data_set["CHAS"] = data_set["CHAS"].astype(str)
-            elif data_set_name == "diabetes":
-                data = datasets.load_diabetes()
-                data_set = pandas.DataFrame(data.data, columns=data.feature_names)
-            elif data_set_name == "breast_cancer":
-                data = datasets.load_breast_cancer()
-                data_set = pandas.DataFrame(data.data, columns=data.feature_names)
-            data_set["target"] = data.target
-            predictors = data.feature_names
-            response = "target"
-
-        # Change category dtype to string
-        for predictor in predictors:
-            if data_set[predictor].dtype in ["category"]:
-                data_set[predictor] = data_set[predictor].astype(str)
-
-        print(f"Data set selected: {data_set_name}")
-        data_set.reset_index(drop=True, inplace=True)
-        return data_set, predictors, response
+from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 
 def cat_correlation(x, y, bias_correction=True, tschuprow=False):
@@ -720,7 +613,8 @@ def categorical_conti(df, categorical_predictors, continous_pred):
             score = {
                 "Predictor 1": pair[0],
                 "Predictor 2": pair[1],
-                "Correlation value": abs(ratio),
+                "Correlation value": ratio,
+                "Abs Correlation value": abs(ratio),
             }
             print(pair[0])
             print(pair[1])
@@ -1004,104 +898,92 @@ def brute_force_cont_cont_mean_heatmap(df, combinations, response):
     return mean_df
 
 
-# def brute_force_cat_cont_mean_heatmap(df, combinations,  response):
-#     print(" Inside cat _cont brute force ")
-#     scores = []
-#     combinations = [(x, y) for (x, y) in combinations if x != y]
-#     print("combinations")
-#     print(combinations)
-#     for i in range(len(combinations)):
-#         cat_pred = combinations[i][0]
-#         cont_pred = combinations[i][1]
-#
-#         print(cat_pred)
-#         print("===================")
-#         print(cont_pred)
+def brute_force_cat_cont_mean_heatmap(df, combinations, response):
+    print(" Inside cat _cont brute force ")
+    scores = []
+    combinations = [(x, y) for (x, y) in combinations if x != y]
+    print("combinations")
+    print(combinations)
 
-#     # Create bins for the continuous predictor
-#     df['bins'] = pd.cut(df[cont_pred], bins=10, right=True).apply(lambda x: x.mid)
-#
-#     # Group the data by the categorical predictor and bins
-#     grouped = df.groupby([cat_pred, cont_pred, 'bins']).agg({response: ['mean', 'size']}).reset_index()
-#     grouped.columns = [cat_pred, cont_pred, 'bins', 'response_mean', 'response_size']
-#
-#     # Calculate unweighted score
-#
-#     unweighted = ((grouped['response_mean'] - df[response].mean()) ** 2).sum() / len(df)
-#
-#     # Calculate weighted score
-#     grouped['weight'] = grouped['response_size'] / grouped['response_size'].sum()
-#     grouped['weighted_diff'] = grouped['weight'] * ((grouped['response_mean'] - df[response].mean()) ** 2)
-#     weighted = grouped['weighted_diff'].sum()
-#
-#     print("unweighted-------------------")
-#     print(unweighted)
-#     print("weighted-----------------------")
-#     print(weighted)
-#
-#     final_dict = {
-#         "cont_1": cat_pred,
-#         "cont_2": cont_pred,
-#         "diff_mean_resp_ranking": unweighted,
-#         "diff_mean_resp_weighted_ranking": weighted,
-#     }
-#     scores.append(final_dict)
-#     mean_df = pd.DataFrame(scores)
-#
-# return mean_df
-#     COLUMN_NAMES = {
-#
-#         "BF_UNWEIGHTED": "bf_unweighted",
-#         "BF_WEIGHTED": "bf_weighted",
-#         "MEAN_SIZE": "mean_size",
-#     }
-#
-#     def create_bins(df, column):
-#         return pd.qcut(df[column], q=10, duplicates="drop")
-#
-#     def calculate_bf_unweighted(df, response):
-#         response_mean = f"{response}_mean"
-#         print(df)
-#         print(response)
-#         print(df[response])
-#         df_mean = df[response].mean()
-#         df[COLUMN_NAMES["BF_UNWEIGHTED"]] = (df[response_mean] - df_mean).pow(2)
-#         return df
-#
-#     def calculate_bf_weighted(df, response):
-#         response_mean = f"{response}_mean"
-#         response_size = f"{response}_size"
-#         bf_unweighted = COLUMN_NAMES["BF_UNWEIGHTED"]
-#         df[COLUMN_NAMES["BF_WEIGHTED"]] = (
-#                 df[response_size] / df[response_size].sum() * df[bf_unweighted]
-#         )
-#         return df
-#
-#     def format_mean_size(df, response):
-#         response_mean = f"{response}_mean"
-#         response_size = f"{response}_size"
-#         df[COLUMN_NAMES["MEAN_SIZE"]] = df.apply(
-#             lambda row: f"{row[response_mean]:.3f} (pop:{row[response_size]})",
-#             axis=1,
-#         )
-#         return df
-#
-#     def process_dataframe(df, cat_pred, cont_pred, response):
-#         print(cat_pred)
-#         print(cont_pred)
-#         cont_pred_bins = f"{cont_pred}_bins"
-#         df[cont_pred_bins] = create_bins(df, cont_pred).apply(lambda x: x.mid)
-#         df = df.groupby([cat_pred, cont_pred_bins])[response].agg(["mean", "size"]).reset_index()
-#         df = df.rename(columns={"mean": f"{response}_mean", "size": f"{response}_size"})
-#         df = calculate_bf_unweighted(df, response)
-#         df = calculate_bf_weighted(df, response)
-#         df = format_mean_size(df, response)
-#         return df
-#
-#     df_new= process_dataframe(df, cat_pred, cont_pred, response)
-#
-#     print(df_new)
-#     return df_new
+    for i in range(len(combinations)):
+        cat_pred = combinations[i][0]
+        cont_pred = combinations[i][1]
+
+        print("start")
+        print(cat_pred)
+        print("===================")
+        print(cont_pred)
+
+        newdf = df
+        newdf[cont_pred + "bins"] = pd.cut(df[cont_pred], bins=10, right=True).apply(
+            lambda x: x.mid
+        )
+        newdf = (
+            newdf[[cat_pred, cont_pred, cont_pred + "bins", response]]
+            .groupby([cat_pred, cont_pred + "bins"])
+            .agg(["mean", "size"])
+            .reset_index()
+        )
+        newdf.columns = newdf.columns.to_flat_index().map("".join)
+
+        newdf["unweighted"] = (
+            newdf[response + "mean"]
+            .to_frame()
+            .apply(lambda x: (df[response].mean() - x) ** 2)
+        )
+
+        newdf["weighted"] = newdf.apply(
+            lambda x: (x[response + "size"] / newdf[response + "size"].sum())
+            * x["unweighted"],
+            axis=1,
+        )
+        newdf["size"] = newdf.apply(
+            lambda x: "{:.3f} (pop:{})".format(
+                x[response + "mean"], x[response + "size"]
+            ),
+            axis=1,
+        )
+
+        unweighted = round(newdf["unweighted"].sum() / len(newdf), 6)
+        weighted = round(newdf["weighted"].sum(), 6)
+
+        # print("unweighted-------------------")
+        # print(unweighted)
+        # print("weighted-----------------------")
+        # print(weighted)
+
+        # # Create the heatmap trace
+        heatmap = go.Heatmap(
+            x=np.array(newdf[cat_pred]),
+            y=np.array(newdf[cont_pred + "bins"]),
+            z=np.array(newdf[response + "mean"]),
+            text=np.array(newdf["size"]),
+            colorscale="Blues",
+            texttemplate="%{text}",
+        )
+
+        # Define the layout of the plot
+        layout = go.Layout(
+            title=f"{cat_pred} vs {cont_pred} (Bin Averages)",
+            xaxis=dict(title=cat_pred),
+            yaxis=dict(title=cont_pred),
+        )
+
+        fig = go.Figure(data=[heatmap], layout=layout)
+        file = f"adarsh21b-plots/{cat_pred}vs{cont_pred}heatmap.html"
+        fig.write_html(file=file, include_plotlyjs="cdn")
+
+        final_dict = {
+            "Predictor 1": cat_pred,
+            "Predictor 2": cont_pred,
+            "diff_mean_resp_ranking": unweighted,
+            "diff_mean_resp_weighted_ranking": weighted,
+            "path": file,
+        }
+        scores.append(final_dict)
+    mean_df = pd.DataFrame(scores)
+
+    return mean_df
 
 
 def brute_force_cat_cat_mean_heatmap(df, combinations, response):
@@ -1484,27 +1366,100 @@ def save_dataframe_to_html(df, plot_link_mor, plot_link, caption):
         f.write(html_table)
 
 
+def get_baseball_data():
+
+    db_user = "root"
+    db_pass = 9501
+    db_host = "localhost"
+    db_database = "baseball"
+    connect_string = (
+        f"mariadb+mariadbconnector://{db_user}:{db_pass}@{db_host}/{db_database}"
+    )
+    sql_engine = sqlalchemy.create_engine(connect_string)
+
+    query = """
+        SELECT * FROM final_baseball
+    """
+    df = pd.read_sql_query(query, sql_engine)
+    return df
+
+
+def build_model(df, predictors, response):
+    X = df[[predictors]].values
+    y = df[response].values
+
+    # Train and split data
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, shuffle=False, stratify=None, random_state=2
+    )
+
+    # Decision Tree Model
+    clf2 = tree.DecisionTreeClassifier()
+    clf2 = clf2.fit(X_train, y_train)
+
+    print("Decision Tree : ", clf2.score(X_test, y_test))
+
+    # Random Forest Model
+    pipeline = Pipeline(
+        [
+            ("OneHotEncode", StandardScaler()),
+            ("RandomForest", RandomForestClassifier(random_state=100)),
+        ]
+    )
+    pipeline.fit(X_train, y_train)
+    Pipeline(
+        steps=[
+            ("OneHotEncode", StandardScaler()),
+            ("RandomForest", RandomForestClassifier(random_state=100)),
+        ]
+    )
+    print("Random Forest Score:", pipeline.score(X_test, y_test))
+
+    # Logistic Regression Model
+    clf = LogisticRegression(random_state=0).fit(X_train, y_train)
+    print("Logistic Regression Score : ", clf.score(X_test, y_test))
+
+
 def main():
     check_directory()
-    test_datasets = TestDatasets()
-    test_dict = {}
-    for test in test_datasets.get_all_available_datasets():
-        df, predictors, response = test_datasets.get_test_data_set(data_set_name=test)
-        test_dict[test] = [df, predictors, response]
+    # test_datasets = TestDatasets()
+    # test_dict = {}
+    # for test in test_datasets.get_all_available_datasets():
+    #     df, predictors, response = test_datasets.get_test_data_set(data_set_name=test)
+    #     test_dict[test] = [df, predictors, response]
+    #
+    # dataset_list = list(test_dict.keys())
+    # print("Available Datasets: ")
+    # for i in dataset_list:
+    #     print(i)
+    #
+    # dataset = input("Enter your testing dataset: ").strip().lower()
+    #
+    # df = test_dict[dataset][0]
+    # predictors = test_dict[dataset][1]
+    # response = test_dict[dataset][2]
 
-    dataset_list = list(test_dict.keys())
-    print("Available Datasets: ")
-    for i in dataset_list:
-        print(i)
-
-    dataset = input("Enter your testing dataset: ").strip().lower()
-
-    df = test_dict[dataset][0]
-    predictors = test_dict[dataset][1]
-    response = test_dict[dataset][2]
-
+    df = get_baseball_data()
+    df = df.reset_index(drop=True)
+    df = df.fillna(0)
+    response = "Home_Team_Wins"
+    predictors = [
+        "Isolated_Power_Diff",
+        "DICE_diff",
+        "Whip_100_diff",
+        "Home_Run_per_Nine_Innings_diff",
+        "Hits_per_Nine_Innings_diff",
+        "Batting_Avg_Against_diff",
+        "CERA_diff",
+        "PFR_diff",
+        "TimesOnBaseDiff",
+        "StrikeOutToWalkRatio_diff",
+    ]
+    print("dataframe")
     print(df)
+    print("predictors")
     print(predictors)
+    print("response")
     print(response)
 
     print("Response type: " + str(check_response(df, response)))
@@ -1574,46 +1529,59 @@ def main():
         print(score_df_corr.columns)
 
     # Merging the dataframes for cramer's table
-    merge_cat_cat_correlation_dataframes_c(
-        cramer_df, mean_df_cat_pred, mean_df_cont_pred
-    )
-    merge_cat_cat_correlation_dataframes_t(t_df, mean_df_cat_pred, mean_df_cont_pred)
+    if len(categorical_predictors) > 0:
+        merge_cat_cat_correlation_dataframes_c(
+            cramer_df, mean_df_cat_pred, mean_df_cont_pred
+        )
+        merge_cat_cat_correlation_dataframes_t(
+            t_df, mean_df_cat_pred, mean_df_cont_pred
+        )
 
-    # Brute Force
-    brute_force_mean_df = brute_force_cat_cat_mean_heatmap(df, cate_df, response)
-    merged_df = pd.merge(
-        pd.merge(brute_force_mean_df, cramer_df, on=["Predictor 1", "Predictor 2"]),
-        t_df,
-        on=["Predictor 1", "Predictor 2"],
-    )
+        # Brute Force
+        brute_force_mean_df = brute_force_cat_cat_mean_heatmap(df, cate_df, response)
+        merged_df = pd.merge(
+            pd.merge(brute_force_mean_df, cramer_df, on=["Predictor 1", "Predictor 2"]),
+            t_df,
+            on=["Predictor 1", "Predictor 2"],
+        )
 
-    save_dataframe_to_html_bruteforce(
-        merged_df,
-        "path",
-        "Brute_Force_Categorical_Categorical",
-    )
+        save_dataframe_to_html_bruteforce(
+            merged_df,
+            "path",
+            "Brute_Force_Categorical_Categorical",
+        )
 
-    brute_force_cont_cont_df = brute_force_cont_cont_mean_heatmap(df, cont_df, response)
-    merged_df = pd.merge(
-        brute_force_cont_cont_df, pearson_df, on=["Predictor 1", "Predictor 2"]
-    )
-    save_dataframe_to_html_bruteforce(
-        merged_df,
-        "path",
-        "Brute_Force_Continuous_Continuous",
-    )
-    # brute_force_cat_cont_df = brute_force_cat_cont_mean_heatmap(df, cate_df,cont_df, response)
+    if len(continuous_predictors) > 0:
+        brute_force_cont_cont_df = brute_force_cont_cont_mean_heatmap(
+            df, cont_df, response
+        )
+        merged_df = pd.merge(
+            brute_force_cont_cont_df, pearson_df, on=["Predictor 1", "Predictor 2"]
+        )
+        save_dataframe_to_html_bruteforce(
+            merged_df,
+            "path",
+            "Brute_Force_Continuous_Continuous",
+        )
 
-    # brute_force_cat_cont_df = brute_force_cat_cont_mean_heatmap(df, combinations_cat_cont, response)
+    if len(continuous_predictors) > 0 and len(categorical_predictors) > 0:
+        brute_force_cat_cont_df = brute_force_cat_cont_mean_heatmap(
+            df, combinations_cat_cont, response
+        )
 
-    # merged_df = pd.merge(
-    #     brute_force_cat_cont_df, score_df_corr, on=["Predictor 1", "Predictor 2"]
-    # )
-    # save_dataframe_to_html_bruteforce(
-    #     merged_df,
-    #     "path",
-    #     "Brute_Force_Categorical_Continuous",
-    # )
+        merged_df = pd.merge(
+            brute_force_cat_cont_df, score_df_corr, on=["Predictor 1", "Predictor 2"]
+        )
+        save_dataframe_to_html_bruteforce(
+            merged_df,
+            "path",
+            "Brute_Force_Categorical_Continuous",
+        )
+
+    # Training model and features
+
+    print(predictors)
+    build_model(df, predictor, response)
 
 
 if __name__ == "__main__":
