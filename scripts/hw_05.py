@@ -179,8 +179,6 @@ def check_directory():
 
 def logistic_reg(df, response, predictor, predtype, resp, file=None):
     print("Inside Logistic Regression")
-    print(predtype)
-    print(predictor.dtype)
 
     if predictor.dtype not in ["category", "object", "bool"]:
         predict = statsmodels.api.add_constant(predictor)
@@ -475,7 +473,7 @@ def mean_of_response_cat_cat(df, predictor, response_df, response):
 
 
 def mean_of_response_cont_cont(df, predictor, response_df, response):
-    print("INdside mean of respp cont cont ==========")
+    print("Inside Mean of Response Cont-Cont")
     bin_count = 10
     bins = pd.cut(df[predictor], bin_count).apply(lambda x: x.mid)
     bins_mod = np.sort(np.array(bins.unique()))
@@ -492,10 +490,10 @@ def mean_of_response_cont_cont(df, predictor, response_df, response):
         (bin_population / total_population) * (bin_response - population_resp) ** 2
     )
 
-    print("---msd---")
-    print(mean_squared_diff)
-    print("-----wmsd----")
-    print(weighted_mean_squared_diff)
+    # print("---msd---")
+    # print(mean_squared_diff)
+    # print("-----wmsd----")
+    # print(weighted_mean_squared_diff)
 
     fig = go.Figure()
     fig.add_trace(
@@ -553,7 +551,7 @@ def mean_of_response_cont_cont(df, predictor, response_df, response):
         xaxis=dict(title=dict(text="Predictor Bins")),
     )
 
-    fig.show()
+    # fig.show()
 
     file = f"adarsh21b-plots/{predictor}vs{response}morp.html"
     fig.write_html(file=file, include_plotlyjs="cdn")
@@ -627,7 +625,6 @@ def categorical_conti(df, categorical_predictors, continous_pred):
             l_cat_cont.append(score)
 
         score_df = pd.DataFrame(l_cat_cont)
-        print(score_df)
 
         figure = correlation_matrix(
             score_df["Predictor 1"],
@@ -864,8 +861,8 @@ def brute_force_cont_cont_mean_heatmap(df, combinations, response):
             axis=1,
         )
 
-        print(df_new)
-        print(df_new.columns)
+        # print(df_new)
+        # print(df_new.columns)
 
         weighted = df_new["weighted"].sum()
         unweighted = df_new["unweighted"].sum() / len(df_new)
@@ -904,7 +901,7 @@ def brute_force_cont_cont_mean_heatmap(df, combinations, response):
 
 
 def brute_force_cat_cont_mean_heatmap(df, combinations, response):
-    print(" Inside cat _cont brute force ")
+    print(" Inside cat_cont brute force ")
     scores = []
     combinations = [(x, y) for (x, y) in combinations if x != y]
     print("combinations")
@@ -914,7 +911,6 @@ def brute_force_cat_cont_mean_heatmap(df, combinations, response):
         cat_pred = combinations[i][0]
         cont_pred = combinations[i][1]
 
-        print("start")
         print(cat_pred)
         print("===================")
         print(cont_pred)
@@ -1145,9 +1141,6 @@ def categorical_cate(df, categorical_predictors, response_df):
     """
     with open("adarsh_midterm.html", "a") as f:
         f.write(figure)
-
-    print(score_df)
-    print(score_df_c)
     return combinations, score_df, score_df_c
 
 
@@ -1184,15 +1177,6 @@ def cont_response_cat_predictor_plot(df, predictor, response):
 
 
 def merge_cat_cat_correlation_dataframes_c(df_cramers, df_mean_cat, df_mean_cont):
-    print("cramers df")
-    print(df_cramers)
-
-    print("df mean cat")
-    print(df_mean_cat)
-
-    print("df mean cont")
-    print(df_mean_cont)
-
     # Creating cramers merged dataframe
 
     # merge the two dataframes on the 'Pred1' column of the first dataframe and the 'Pred' column of the second
@@ -1217,16 +1201,6 @@ def merge_cat_cat_correlation_dataframes_c(df_cramers, df_mean_cat, df_mean_cont
     merged_df = merged_df[
         ["Predictor 1", "Predictor 2", "Correlation value", "path1", "path2"]
     ]
-    # rename the 'PlotLink' columns to 'Link1' and 'Link2'
-    # merged_df = merged_df.rename(columns={'path': 'Link1', 'path': 'Link2'})
-
-    # print the resulting dataframe
-    print("merged dataframe")
-    print(merged_df)
-
-    print("merged dataframe dataframe")
-    print(merged_df.columns)
-
     save_dataframe_to_html(
         merged_df,
         "path1",
@@ -1236,14 +1210,6 @@ def merge_cat_cat_correlation_dataframes_c(df_cramers, df_mean_cat, df_mean_cont
 
 
 def merge_cat_cat_correlation_dataframes_t(df_tschuprow, df_mean_cat, df_mean_cont):
-    print("tschuprow df")
-    print(df_tschuprow)
-
-    print("df mean cat")
-    print(df_mean_cat)
-
-    print("df mean cont")
-    print(df_mean_cont)
 
     merged_df = pd.merge(
         df_tschuprow, df_mean_cat, left_on="Predictor 1", right_on="predictor"
@@ -1261,15 +1227,6 @@ def merge_cat_cat_correlation_dataframes_t(df_tschuprow, df_mean_cat, df_mean_co
     merged_df = merged_df[
         ["Predictor 1", "Predictor 2", "Correlation value", "path1", "path2"]
     ]
-    # rename the 'PlotLink' columns to 'Link1' and 'Link2'
-    # merged_df = merged_df.rename(columns={'path': 'Link1', 'path': 'Link2'})
-
-    # print the resulting dataframe
-    print("merged dataframe")
-    print(merged_df)
-
-    print("merged dataframe dataframe")
-    print(merged_df.columns)
 
     save_dataframe_to_html(
         merged_df,
@@ -1427,6 +1384,11 @@ def build_model(df, predictors, response):
     clf = LogisticRegression(random_state=0).fit(X_train, y_train)
     print("Logistic Regression Score : ", clf.score(X_test, y_test))
 
+    print(
+        "Almost similar scores are observed in these three above models. Overall I would say by comparing the "
+        "scores RANDOM FOREST would be good algorithm to use"
+    )
+
 
 def save_dataframe_to_html_pearson(df, plot_link, caption):
     def make_clickable(link, link_name):
@@ -1472,23 +1434,6 @@ def save_dataframe_to_html_pearson(df, plot_link, caption):
 
 def main():
     check_directory()
-    # test_datasets = TestDatasets()
-    # test_dict = {}
-    # for test in test_datasets.get_all_available_datasets():
-    #     df, predictors, response = test_datasets.get_test_data_set(data_set_name=test)
-    #     test_dict[test] = [df, predictors, response]
-    #
-    # dataset_list = list(test_dict.keys())
-    # print("Available Datasets: ")
-    # for i in dataset_list:
-    #     print(i)
-    #
-    # dataset = input("Enter your testing dataset: ").strip().lower()
-    #
-    # df = test_dict[dataset][0]
-    # predictors = test_dict[dataset][1]
-    # response = test_dict[dataset][2]
-
     df = get_baseball_data()
     df = df.reset_index(drop=True)
     df = df.fillna(0)
@@ -1514,7 +1459,6 @@ def main():
 
     print("Response type: " + str(check_response(df, response)))
     response_df = df[response]
-    print(response_df)
 
     continuous_predictors = []
     for predictor in predictors:
@@ -1600,7 +1544,6 @@ def main():
         score_df_corr, combinations_cat_cont = categorical_conti(
             df, categorical_predictors, continuous_predictors
         )
-        print(score_df_corr.columns)
 
     # Merging the dataframes for cramer's table
     if len(categorical_predictors) > 0:
