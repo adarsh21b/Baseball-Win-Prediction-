@@ -72,7 +72,7 @@ six==1.16.0
     # via
     #   patsy
     #   python-dateutil
-sqlalchemy<2.0.0
+sqlalchemy==2.0.10
     # via -r requirements.in
 statsmodels==0.13.5
     # via -r requirements.in
