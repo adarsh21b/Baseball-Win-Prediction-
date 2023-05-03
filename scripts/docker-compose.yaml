@@ -1,0 +1,15 @@
+version: "3.3"
+
+services:
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 9501
+      MYSQL_DATABASE: "baseball"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: 9501
+    volumes:
+      - data:/var/lib/mysql
+    ports:
+      - "3306:3306"
