@@ -26,7 +26,7 @@ GROUP BY b.batter ORDER BY b.batter
 DROP TABLE IF EXISTS Rolling_AVG_100_day;
 
 CREATE TABLE Rolling_AVG_100_day AS
-SELECT b2.batter, DATE(b2.game_date) AS game_date, COALESCE(SUM(b1.hit_sum) / NULLIF(SUM(b1.atbat_sum), 0), 0) AS  rolling_avg
+SELECT b2.batter, DATE(b2.game_date) AS game_date, ROUND(COALESCE(SUM(b1.hit_sum) / NULLIF(SUM(b1.atbat_sum), 0), 0), 4) AS  rolling_avg
 FROM batter_sums_new AS b2 LEFT JOIN batter_sums_new  AS b1 ON ( DATEDIFF(b2.game_date, b1.game_date) <= 100
     AND DATEDIFF(b2.game_date, b1.game_date) > 0 AND b2.batter = b1.batter)
 GROUP BY b2.batter, b2.game_date ORDER BY b2.batter, b2.game_date
