@@ -1,13 +1,15 @@
+USE baseball;
+
 DROP TABLE IF EXISTS batter_sums_new;
 
 CREATE TEMPORARY TABLE batter_sums_new AS
 SELECT batter, YEAR(g.local_date) AS game_year, Date(g.local_date) AS game_date, SUM(b.Hit) AS hit_sum, SUM(b.atBat) AS atBat_sum
 FROM batter_counts b JOIN game g ON b.game_id = g.game_id GROUP BY batter, game_date
 ;
-CREATE INDEX ind_batter_counts_game_id ON batter_counts (game_id);
-CREATE INDEX ind_game_local_date ON game (local_date);
-CREATE INDEX index_batter_rolling ON batter_sums_new(batter);
-CREATE INDEX index__date_rolling_new ON batter_sums_new(game_date);
+CREATE INDEX IF NOT EXISTS ind_batter_counts_game_id ON batter_counts (game_id);
+CREATE INDEX IF NOT EXISTS ind_game_local_date ON game (local_date);
+CREATE INDEX IF NOT EXISTS index_batter_rolling ON batter_sums_new(batter);
+CREATE INDEX IF NOT EXISTS index__date_rolling_new ON batter_sums_new(game_date);
 
 DROP TABLE IF EXISTS Rolling_AVG_100_day;
 

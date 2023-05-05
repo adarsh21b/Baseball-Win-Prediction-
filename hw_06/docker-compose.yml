@@ -9,7 +9,7 @@ services:
       - PGID= 1000
       - MYSQL_ROOT_PASSWORD=9501
       - MYSQL_DATABASE=baseball
-    restart: on-failure
+    restart: unless-stopped
     ports:
       - "4305:3306"
 
