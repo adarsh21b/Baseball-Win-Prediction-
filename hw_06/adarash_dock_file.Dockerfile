@@ -18,4 +18,3 @@ RUN chmod +x bash_scrpt.sh
 
 
 COPY records.csv   .
-RUN chmod +x records.csv

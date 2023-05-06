@@ -5,8 +5,6 @@ services:
     image: mariadb:latest
     container_name: mariadb_db
     environment:
-      - PUID=1000
-      - PGID= 1000
       - MYSQL_ROOT_PASSWORD=9501
       - MYSQL_DATABASE=baseball
     restart: unless-stopped

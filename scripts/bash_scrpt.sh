@@ -2,11 +2,11 @@
 
 echo 'we are inside the script!'
 
-sleep 10
+sleep 60
 
-if mysql -u root -p9501 -h mariadb_db -e "select * from baseball.pitcher_counts limit 5;"
+if mysql -u root -p9501 -h mariadb_db -e "select * from baseball.pitcher_counts limit 2;"
 then
-  echo 'the database exists. Next we will load hw_02 sql file'
+  echo 'the database exists. we are gonna load our file from hw_02'
   mysql -u root -p9501 -h mariadb_db  baseball < hw_02.sql
   echo 'the output needs to be stored in csv now'
   mysql -u root -p9501 -h mariadb_db  -e "select * from baseball.Rolling_AVG_100_day;" > records.csv
@@ -22,6 +22,3 @@ else
   echo 'records recorded in records.csv'
 
 fi
-
-
-
