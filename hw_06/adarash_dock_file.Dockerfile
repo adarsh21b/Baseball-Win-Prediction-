@@ -9,12 +9,9 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY baseball.sql   .
-
-
 COPY hw_02.sql   .
-
 COPY bash_scrpt.sh .
-RUN chmod +x bash_scrpt.sh
 
+RUN chmod +x bash_scrpt.sh
 
 COPY records.csv   .
