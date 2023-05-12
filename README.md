@@ -38,7 +38,7 @@ Dataset Link:
 - Metrics like recall, accuracy, and precision are used to gauge the model's performance.
 
 ## Tools and Libraries Used
-- Python (python.org) 
+- Python [python.org] 
 - Docker ()
 - Mariadb 
 
