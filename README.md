@@ -21,6 +21,3 @@
 
 `pre-commit run --all-files`
 
-# BASEBALL WIN PREDICTION USING MACHINE LEARNING
-
-![image](https://github.com/adarsh21b/BDA602-ML/assets/52619301/6983ef22-570f-4acd-8c5d-2fc2a4e7f2ef)
