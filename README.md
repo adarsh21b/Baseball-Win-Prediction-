@@ -46,8 +46,25 @@ Dataset Link:
 - [Mariadb](https://mariadb.com/kb/en/getting-installing-and-upgrading-mariadb/)
 - [SQL](https://mariadb.com/kb/en/sql-statements/) 
 
-## Features
+## Features and its Importance
 Feature engineering is a machine learning method that creates new variables not found in the training set by using data. It can provide new features for both supervised and unsupervised learning, with the goal of streamlining and speeding up data conversions while simultaneously enhancing model correctness. The time-effective method of feature engineering for getting consistent results from data preparation makes its significance clear. An unfavorable feature will have a direct impact on your model, regardless of the architecture or the data.
+
+# Features Used in Baseball Dataset
+1. [Isolated power](https://en.wikipedia.org/wiki/Isolated_power)
+2. [DICE (Defense Component ERA)](https://en.wikipedia.org/wiki/Defense-Independent_Component_ERA)
+3. [WHIP (Walks and Hits Per Innings)](https://en.wikipedia.org/wiki/Walks_plus_hits_per_inning_pitched)
+4. [Hits allowed per nine Innings](https://en.wikipedia.org/wiki/Hits_per_nine_innings)
+5. [Strikeout per nine innings pitched](https://en.wikipedia.org/wiki/Strikeouts_per_nine_innings_pitched)
+6. [Base on Balls per nine innings](https://en.wikipedia.org/wiki/Bases_on_balls_per_nine_innings_pitched)
+7. [Home runs per nine innings](https://en.wikipedia.org/wiki/Home_runs_per_nine_innings)
+8. [CERA (Component ERA)](https://en.wikipedia.org/wiki/Component_ERA)
+9. [Times on Base](https://en.wikipedia.org/wiki/Times_on_base)
+10. [Batting Avgerage_Against](https://en.wikipedia.org/wiki/Batting_average_against)
+11. [PFR (Power Finesse Ratio)](https://en.wikipedia.org/wiki/Power_finesse_ratio)
+12. [Strikeout to Walk Ratio](https://en.wikipedia.org/wiki/Strikeout-to-walk_ratio)
+13. [Pythagorean Expectation](https://en.wikipedia.org/wiki/Pythagorean_expectation)
+14. [BABIP (Batting Average on Balls in Play)](https://en.wikipedia.org/wiki/Batting_average_on_balls_in_play)
+
 
 
 
