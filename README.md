@@ -26,6 +26,7 @@
 ## Introduction
 Baseball Dataset: The dataset contains Batting, Pitching and Fielding statistics of team. There are numerous tables in this database that contain information about baseball players and teams, including game, box score, team batting, team pitching, and pitcher counts, among others. 
 Dataset Link: 
+
 (This database provides data from baseball contests that took place between 2008 and 2012.)
 
 - The goal of this research is to use the baseball dataset to develop new features that may be used to forecast whether the home team will win a specific game or not. We will be doing feature engineering in order to do this.
@@ -41,9 +42,9 @@ Dataset Link:
 
 ## Tools and Libraries Used
 - [Python](https://www.python.org/downloads/) - Numpy, Pandas, sqlalchemy, sklearn, plotly, statsmodel, plotly, scipy etc.
-- [Docker] (https://www.docker.com/)
-- [Mariadb] (https://mariadb.com/kb/en/getting-installing-and-upgrading-mariadb/)
-- [SQL] (https://mariadb.com/kb/en/sql-statements/) 
+- [Docker](https://www.docker.com/)
+- [Mariadb](https://mariadb.com/kb/en/getting-installing-and-upgrading-mariadb/)
+- [SQL](https://mariadb.com/kb/en/sql-statements/) 
 
 ## 
 
