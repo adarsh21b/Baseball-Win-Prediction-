@@ -23,7 +23,7 @@
 
 # BASEBALL WIN PREDICTION USING MACHINE LEARNING
 
-##Introduction
+## Introduction
 Baseball Dataset: The dataset contains Batting, Pitching and Fielding statistics of team.  
 Dataset Link: 
 
