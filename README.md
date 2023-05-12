@@ -37,6 +37,8 @@ Dataset Link:
 - Which is the best ML model so far ? ( We will use different ML Algorithms like Random Forest, Logisitc Regression, SVM and other SUpervised Learning alogorithms to evaluate model performance)
 - Metrics like recall, accuracy, and precision are used to gauge the model's performance.
 
-
-
+## Tools and Libraries Used
+- Python (python.org) 
+- Docker ()
+- Mariadb 
 
