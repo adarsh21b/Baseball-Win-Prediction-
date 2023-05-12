@@ -1,1 +1,11 @@
 numpy
+pandas
+scipy
+plotly
+scikit-learn
+pyspark
+statsmodels
+seaborn
+mariadb
+sqlalchemy
+jinja2

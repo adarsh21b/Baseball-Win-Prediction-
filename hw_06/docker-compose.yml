@@ -1,0 +1,23 @@
+version: "3.3"
+
+services:
+  mariadb_db:
+    image: mariadb:latest
+    container_name: mariadb_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=9501
+      - MYSQL_DATABASE=baseball
+    restart: unless-stopped
+    ports:
+      - "4305:3306"
+
+  ada_driving_container:
+    container_name: ada_driving_container
+    depends_on:
+      - mariadb_db
+    volumes:
+      - .:/app/
+    build:
+      context: /home/adarsh/src/BDA602-ML/hw_06/
+      dockerfile: adarash_dock_file.Dockerfile
+    command: ["/bin/bash", "bash_scrpt.sh"]
