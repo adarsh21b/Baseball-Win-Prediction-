@@ -34,7 +34,8 @@ Dataset Link:
 - By observing how different predictors interact with one another, these plots help us to discern between predictors that are helpful for our prediction analysis and those that are not.
 - The ultimate objective would be to gradually increase the accuracy of these forecasts, maybe by adding more data or modifying the model in response to its performance.
 - Brute force approach is also done to understand the features importance along with its mean of response plot to improve the understanding.
-- Which is the best ML model so far ?
+- Which is the best ML model so far ? ( We will use different ML Algorithms like Random Forest, Logisitc Regression, SVM and other SUpervised Learning alogorithms to evaluate model performance)
+- Metrics like recall, accuracy, and precision are used to gauge the model's performance.
 
 
 
