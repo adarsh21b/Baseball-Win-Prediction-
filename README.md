@@ -46,6 +46,8 @@ Dataset Link:
 - [Mariadb](https://mariadb.com/kb/en/getting-installing-and-upgrading-mariadb/)
 - [SQL](https://mariadb.com/kb/en/sql-statements/) 
 
-## 
+## Features
+Feature engineering is a machine learning method that creates new variables not found in the training set by using data. It can provide new features for both supervised and unsupervised learning, with the goal of streamlining and speeding up data conversions while simultaneously enhancing model correctness. The time-effective method of feature engineering for getting consistent results from data preparation makes its significance clear. An unfavorable feature will have a direct impact on your model, regardless of the architecture or the data.
+
 
 
