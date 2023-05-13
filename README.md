@@ -104,7 +104,7 @@ Feature engineering include the following:
 1. Continuous Features - Single Value of Data which could simply be a multiplication or subtraction of a mathematical feature.
 2. Categorical Features - Categorical data, which refers to features that can accept values from a constrained set, is the second most common sort of data. The feature frequently only accepts a single value.
 
-All of the features are loaded into a data frame after being created in SQL, and various analyses have been performed.
+All the features are loaded into a data frame after being created in SQL, and various analyses have been performed.
 
 1. Ranking the Features: p_value, t_value
 2. Correlation Metrics: Pearson's correlation, cramer's correlation, Tschuprow's Correlation
@@ -126,3 +126,10 @@ The predictor is split into n number of bins to make a plot, and a scatter plot 
 An indicator with a high mean of reaction, as seen below, will have a straight line.
 
 ## Random Forest Variable Importance
+
+The relative weight assigned by a random forest model to each feature in the data. The random forest model is fitted to all the predictors to give the features this ranking.
+
+## Categorical/Continuous Predictors and Response
+
+Response - This specifies the type of response variable being analyzed i.e. outcome.
+Predictors - This specifies the type of predictors and their names that being analyzed. It could either be categorical or continuous.
