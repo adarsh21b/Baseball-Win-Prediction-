@@ -19,6 +19,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sqlalchemy import text
 
 """
 References:
@@ -145,9 +146,9 @@ def correlation_matrix(x, y, score, analysis_name):
 
 
 def check_predictor(df, predictor):
-    print("inside check predictor")
-    print(predictor)
-    print(df[predictor].dtype)
+    # print("inside check predictor")
+    # print(predictor)
+    # print(df[predictor].dtype)
 
     if df[predictor].dtype in ["category", "object", "bool"]:
         pred_type = "Categorical"
@@ -182,7 +183,7 @@ def random_forest_value(df, response, predictors):
 
     feature_importances = dict(zip(predictors, model.feature_importances_))
 
-    print("inside random forest")
+    # print("inside random forest")
     # print(feature_importances)
 
     return feature_importances
@@ -196,7 +197,7 @@ def check_directory():
 
 
 def logistic_reg(df, response, predictor, predtype, resp, file=None):
-    print("Inside Logistic Regression")
+    # print("Inside Logistic Regression")
 
     if predictor.dtype not in ["category", "object", "bool"]:
         predict = statsmodels.api.add_constant(predictor)
@@ -216,8 +217,8 @@ def logistic_reg(df, response, predictor, predtype, resp, file=None):
         fig_2 = go.Figure()
 
         for curr_hist, curr_group in zip(hist_data, group_labels):
-            print(f"curr_hist = {curr_hist}")
-            print(f"curr_group = {curr_group}")
+            # print(f"curr_hist = {curr_hist}")
+            # print(f"curr_group = {curr_group}")
             fig_2.add_trace(
                 go.Violin(
                     x=np.repeat(curr_group, len(curr_hist)),
@@ -241,14 +242,14 @@ def logistic_reg(df, response, predictor, predtype, resp, file=None):
 
 
 def linear_reg(df, response, predictor, predtype, resp, file=None):
-    print("Inside linear Regression")
+    # print("Inside linear Regression")
     pred = statsmodels.api.add_constant(predictor)
     linear_regression_model = statsmodels.api.OLS(response, pred)
     linear_regression_model_fitted = linear_regression_model.fit()
     t_value = round(linear_regression_model_fitted.tvalues[1], 6)
     p_value = "{:.6e}".format(linear_regression_model_fitted.pvalues[1])
 
-    print(predictor.dtype)
+    # print(predictor.dtype)
     if predictor.dtype in ["category", "object", "bool"]:
 
         group_labels = predictor.unique()
@@ -322,7 +323,7 @@ def continuous_cont(df, continous_predictors, response_df, response):
         l.append(score)
 
     score_pearson = pd.DataFrame(l)
-    print(score_pearson)
+    # print(score_pearson)
 
     figure = correlation_matrix(
         score_pearson["Predictor 1"],
@@ -351,7 +352,7 @@ def continuous_cont(df, continous_predictors, response_df, response):
                 continous_predictors[i],
                 response,
             )
-            print(t_value, p_value)
+            # print(t_value, p_value)
             score = {
                 "Predictor 1": continous_predictors[i],
                 "t_value": t_value,
@@ -368,7 +369,7 @@ def continuous_cont(df, continous_predictors, response_df, response):
                 continous_predictors[i],
                 response,
             )
-            print(t_value, p_value)
+            # print(t_value, p_value)
             score = {
                 "Predictor 1": continous_predictors[i],
                 "t_value": t_value,
@@ -491,7 +492,7 @@ def mean_of_response_cat_cat(df, predictor, response_df, response):
 
 
 def mean_of_response_cont_cont(df, predictor, response_df, response):
-    print("Inside Mean of Response Cont-Cont")
+    # print("Inside Mean of Response Cont-Cont")
     bin_count = 10
     bins = pd.cut(df[predictor], bin_count).apply(lambda x: x.mid)
     bins_mod = np.sort(np.array(bins.unique()))
@@ -619,9 +620,9 @@ def categorical_conti(df, categorical_predictors, continous_pred):
     for cat_pred in categorical_predictors:
         for cont_pred in continous_pred:
             combinations.append((cat_pred, cont_pred))
-
-    print("------------cate cont---------")
-    print(combinations)
+    #
+    # print("------------cate cont---------")
+    # print(combinations)
 
     if len(combinations) > 0:
         l_cat_cont = []
@@ -637,9 +638,7 @@ def categorical_conti(df, categorical_predictors, continous_pred):
                 "Correlation value": ratio,
                 "Abs Correlation value": abs(ratio),
             }
-            print(pair[0])
-            print(pair[1])
-            print(ratio)
+
             l_cat_cont.append(score)
 
         score_df = pd.DataFrame(l_cat_cont)
@@ -764,12 +763,12 @@ def mean_of_response_cat_cont(df, predictor, response):
 
     weighted_mse = np.average((bin_resp - pop_resp) ** 2, weights=bin_pop)
 
-    print("---msd---")
-    print(response)
-    print(predictor)
-    print(mse)
-    print("-----wmsd----")
-    print(weighted_mse)
+    # print("---msd---")
+    # print(response)
+    # print(predictor)
+    # print(mse)
+    # print("-----wmsd----")
+    # print(weighted_mse)
 
     fig = go.Figure()
     fig.add_trace(
@@ -842,10 +841,10 @@ def mean_of_response_cat_cont(df, predictor, response):
 
 
 def brute_force_cont_cont_mean_heatmap(df, combinations, response):
-    print("Inside cont cont brute force ")
+    # print("Inside cont cont brute force ")
     scores = []
     combinations = [(x, y) for (x, y) in combinations if x != y]
-    print("combinations")
+    # print("combinations")
     for i in range(len(combinations)):
         pred_1, pred_2 = combinations[i]
 
@@ -861,7 +860,7 @@ def brute_force_cont_cont_mean_heatmap(df, combinations, response):
         df_new = df_new.groupby(["bins1", "bins2"]).agg(["mean", "size"]).reset_index()
         df_new.columns = df_new.columns.to_flat_index().map("".join)
 
-        print(df_new.columns)
+        # print(df_new.columns)
         df_new["unweighted"] = (
             df_new[response + "mean"]
             .to_frame()
@@ -919,19 +918,19 @@ def brute_force_cont_cont_mean_heatmap(df, combinations, response):
 
 
 def brute_force_cat_cont_mean_heatmap(df, combinations, response):
-    print(" Inside cat_cont brute force ")
+    # print(" Inside cat_cont brute force ")
     scores = []
     combinations = [(x, y) for (x, y) in combinations if x != y]
-    print("combinations")
-    print(combinations)
+    # print("combinations")
+    # print(combinations)
 
     for i in range(len(combinations)):
         cat_pred = combinations[i][0]
         cont_pred = combinations[i][1]
 
-        print(cat_pred)
-        print("===================")
-        print(cont_pred)
+        # print(cat_pred)
+        # print("===================")
+        # print(cont_pred)
 
         newdf = df
         newdf[cont_pred + "bins"] = pd.cut(df[cont_pred], bins=10, right=True).apply(
@@ -1007,7 +1006,7 @@ def brute_force_cat_cont_mean_heatmap(df, combinations, response):
 
 def brute_force_cat_cat_mean_heatmap(df, combinations, response):
     scores = []
-    print("Inside cat cat brute force")
+    # print("Inside cat cat brute force")
     combinations = [(x, y) for (x, y) in combinations if x != y]
     for i in range(len(combinations)):
         cat_pred_1 = combinations[i][0]
@@ -1030,10 +1029,10 @@ def brute_force_cat_cat_mean_heatmap(df, combinations, response):
         )
         weighted = df_temp["weighted"].sum()
 
-        print("weighted------------")
-        print(weighted)
-        print("unweighted-------------")
-        print(unweighted)
+        # print("weighted------------")
+        # print(weighted)
+        # print("unweighted-------------")
+        # print(unweighted)
 
         df_temp["mean_size"] = (
             df_temp["mean"].round(3).astype(str)
@@ -1083,8 +1082,8 @@ def categorical_cate(df, categorical_predictors, response_df):
         for j in range(len(categorical_predictors)):
             # if categorical_predictors[i] != categorical_predictors[j]:
             combinations.append((categorical_predictors[i], categorical_predictors[j]))
-    print("combinations")
-    print(combinations)
+    # print("combinations")
+    # print(combinations)
 
     l_t = []
     l_c = []
@@ -1351,9 +1350,10 @@ def save_dataframe_to_html(df, plot_link_mor, plot_link, caption):
 
 
 def get_baseball_data():
+
     db_user = "root"
     db_pass = 9501
-    db_host = "localhost"
+    db_host = "mariadb_db"
     db_database = "baseball"
     connect_string = (
         f"mariadb+mariadbconnector://{db_user}:{db_pass}@{db_host}/{db_database}"
@@ -1363,7 +1363,8 @@ def get_baseball_data():
     query = """
         SELECT * FROM final_baseball
     """
-    df = pd.read_sql_query(query, sql_engine)
+    df = pd.DataFrame(sql_engine.connect().execute(text(query)))
+
     return df
 
 
@@ -1468,33 +1469,38 @@ def main():
         "TimesOnBaseDiff",
         "StrikeOutToWalkRatio_diff",
     ]
-    print("dataframe")
-    print(df)
-    print("predictors")
-    print(predictors)
-    print("response")
-    print(response)
-
-    print("Response type: " + str(check_response(df, response)))
+    # print("dataframe")
+    # print(df)
+    # print("predictors")
+    # print(predictors)
+    # print("response")
+    # print(response)
+    #
+    # print("Response type: " + str(check_response(df, response)))
     response_df = df[response]
+
+    for i in df.columns:
+        if df[i].dtype == "O":
+            df[i] = df[i].astype(float)
 
     continuous_predictors = []
     for predictor in predictors:
         if check_predictor(df, predictor) == "Continuous":
             continuous_predictors.append(predictor)
-    print(continuous_predictors)
+    # print(continuous_predictors)
 
     categorical_predictors = []
     for predictor in predictors:
-        print("check categorical predictor")
+        # print("check categorical predictor")
         if check_predictor(df, predictor) == "Categorical":
             categorical_predictors.append(predictor)
 
-    print("----------------categorical predictors-----------")
-    print(categorical_predictors)
+    # print("----------------categorical predictors-----------")
+    # print(categorical_predictors)
 
     # continous_continous
     cont_df = pd.DataFrame()
+
     if len(continuous_predictors) >= 1:
         cont_df, score_df, rf_score_df, pearson_df = continuous_cont(
             df, continuous_predictors, response_df, response
@@ -1615,7 +1621,7 @@ def main():
 
     # Training model and features
 
-    print(predictors)
+    # print(predictors)
     build_model(df, predictor, response)
 
 

@@ -1,3 +1,5 @@
+USE baseball;
+
 DROP TABLE IF EXISTS pitcher_temp;
 
 CREATE TEMPORARY TABLE pitcher_temp AS
@@ -36,15 +38,18 @@ FROM
     LEFT JOIN game g ON pc.game_id = g.game_id
 ;
 
-CREATE INDEX game_id_idx ON pitcher_counts (game_id);
-CREATE INDEX game_date_idx ON pitcher_counts (game_date);
-CREATE INDEX team_id_idx ON pitcher_counts (team_id);
+CREATE INDEX IF NOT EXISTS game_id_idx ON pitcher_temp (game_id);
+CREATE INDEX IF NOT EXISTS game_date_idx ON pitcher_temp (game_date);
+CREATE INDEX IF NOT EXISTS team_id_idx ON pitcher_temp (team_id);
 
 DROP TABLE IF EXISTS pitcher_temp_100_days;
 
 CREATE  TEMPORARY TABLE pitcher_temp_100_days AS
 SELECT
-    CASE WHEN (SUM(pc.atBat)) != 0 THEN ((2 * SUM(pc.`Double`)) + (2 * SUM(pc.Triple)) + (3 * SUM(pc.Home_Run))) / (SUM(pc.atBat)) ELSE 0 END AS Isolated_power_100
+	pc1.game_id
+	, pc1.team_id
+	, pc1.pitcher
+    , CASE WHEN (SUM(pc.atBat)) != 0 THEN ((2 * SUM(pc.`Double`)) + (2 * SUM(pc.Triple)) + (3 * SUM(pc.Home_Run))) / (SUM(pc.atBat)) ELSE 0 END AS Isolated_power_100
     , CASE WHEN (SUM(pc.outsPlayed) / 3) != 0 THEN ((SUM(pc.Hit) + SUM(pc.Walk)) / (SUM(pc.outsplayed) / 3)) ELSE 0 END AS Whip_100
     , CASE WHEN (SUM(pc.outsPlayed) / 3) != 0 THEN (3 + (((13 * (SUM(pc.Home_Run))) + (3 * ((SUM(pc.Walk)) + (SUM(pc.Hit_By_Pitch)))) - (2 * (SUM(pc.Strikeout)))) / (SUM(pc.outsplayed) / 3))) ELSE 0 END AS DICE_100
     , CASE WHEN (SUM(pc.outsplayed) / 3) != 0 THEN (SUM(pc.Home_Run) / (9 * (SUM(pc.outsplayed) / 3))) ELSE 0 END AS Home_Run_per_Nine_Innings_100
@@ -60,19 +65,19 @@ FROM
     LEFT JOIN pitcher_temp pc ON pc1.team_id = pc.team_id
         AND pc.game_date >= DATE_ADD(pc1.game_date, INTERVAL -100 DAY)
         AND pc.game_date < pc1.game_date
-GROUP BY pc1.game_id, pc1.team_id
-ORDER BY pc1.game_id, pc1.team_id
+GROUP BY pc1.game_id, pc1.team_id, pc1.pitcher
+ORDER BY pc1.game_id, pc1.team_id, pc1.pitcher
 ;
 
-CREATE INDEX game_id_idx_100 ON pitcher_temp_100_days (game_id);
-CREATE INDEX game_date_idx_100 ON pitcher_temp_100_days (game_date);
-CREATE INDEX team_id_idx_100 ON pitcher_temp_100_days (team_id);
+CREATE INDEX IF NOT EXISTS game_id_idx_100 ON pitcher_temp_100_days (game_id);
+CREATE INDEX IF NOT EXISTS team_id_idx_100 ON pitcher_temp_100_days (team_id);
 
 DROP TABLE IF EXISTS final_baseball;
 
 CREATE TABLE final_baseball AS
 SELECT
-    CASE WHEN b.winner_home_or_away = 'A' THEN 0 WHEN b.winner_home_or_away = 'H' THEN 1 END AS Home_Team_Wins
+	g.local_date AS game_date
+    , CASE WHEN b.winner_home_or_away = 'A' THEN 0 WHEN b.winner_home_or_away = 'H' THEN 1 END AS Home_Team_Wins
     , (pt_home.Isolated_power_100  - pt_away.Isolated_power_100 ) AS Isolated_Power_Diff
     , (pt_home.DICE_100 - pt_away.DICE_100 ) AS DICE_diff
     , (pt_home.Whip_100 - pt_away.Whip_100 ) AS Whip_100_diff
