@@ -1369,6 +1369,7 @@ def get_baseball_data():
 
 
 def build_model(df, predictors, response):
+    df.sort_values(by="game_date", ascending=False, inplace=True)
     X = df[[predictors]].values
     y = df[response].values
 
@@ -1455,7 +1456,7 @@ def main():
     check_directory()
     df = get_baseball_data()
     df = df.reset_index(drop=True)
-    df = df.fillna(0)
+    df = df.fillna(df.median())
     response = "Home_Team_Wins"
     predictors = [
         "Isolated_Power_Diff",
