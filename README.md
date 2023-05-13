@@ -133,3 +133,20 @@ The relative weight assigned by a random forest model to each feature in the dat
 
 Response - This specifies the type of response variable being analyzed i.e. outcome.
 Predictors - This specifies the type of predictors and their names that being analyzed. It could either be categorical or continuous.
+
+# Continuous-Continuous Pairs Correlation and Brute Force Analysis
+
+To discover patterns between the predictors, these analyses are performed on pairs of predictors. The two predictors are divided into bins, and the square of the difference is obtained by deducting the mean of each bin from the population mean.
+The top predicting characteristics for the model were a few features that were produced in this research by monitoring those patterns and comparing the predictors.
+The brute force approach between the pair has both continuous-continuous predictors and include the following columns:
+
+1. Predictor 1
+2. Predictor 2
+3. diff_mean_resp_ranking
+4. diff_mean_resp_weighted_ranking path
+5. Pearson's Correlation value
+
+Some Good Feature Combination based on Pearson’s Correlation value:
+Batting_Avg_Against_diff vs Hits_per_Nine_Innings_diff
+CERA_diff vs TimesOnBaseDiff
+Batting_Avg_Against_diff vs Whip_100_diff
