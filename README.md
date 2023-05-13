@@ -65,6 +65,19 @@ Feature engineering is a machine learning method that creates new variables not 
 13. [Pythagorean Expectation](https://en.wikipedia.org/wiki/Pythagorean_expectation)
 14. [BABIP (Batting Average on Balls in Play)](https://en.wikipedia.org/wiki/Batting_average_on_balls_in_play)
 
+# About some Important Features
+## DICE
+Similar to CERA, but using a different model that takes into account additional factors including the strikeout rate and walk rate.
+These factors can be very important since they show how well-controlled a pitcher is and how well-equipped they are to get batters out on their own, without the assistance of the defense.If DICE is incorporated into the model as a feature, it may be able to more accurately predict game outcomes based on the relative strength of each team's pitching staff.
+
+## CERA 
+This measure seeks to forecast a pitcher's earned run average (ERA).
+This could be a key component of the model given that ERA is a common indicator for evaluating pitcher performance. It gives an indication of how many runs an average pitcher gives up throughout a game and is widely used to compare pitchers.
+The relative power of each team's pitching staff could be a key factor in determining the outcome of a game, and the CERA feature could help the model grasp this better. This is accomplished by foreseeing a pitcher's ERA
+
+## WHIP
+The WHIP is one of the metrics most frequently used to evaluate a pitcher's performance. The formula is simple: divide a pitcher's total innings pitched by the total of his walks and hits. It stands to reason that the best pitchers in the league should be able to stop baserunners because they often have the lowest WHIPs. However, WHIP does not consider the means by which a hitter reached base. Naturally, home runs hurt pitchers more than walks do. Hit batsmen, errors, or fielder decisions have no impact on a pitcher's WHIP.
+
 
 
 
