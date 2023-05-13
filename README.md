@@ -78,11 +78,11 @@ The relative power of each team's pitching staff could be a key factor in determ
 ### WHIP
 The WHIP is one of the metrics most frequently used to evaluate a pitcher's performance. The formula is simple: divide a pitcher's total innings pitched by the total of his walks and hits. It stands to reason that the best pitchers in the league should be able to stop baserunners because they often have the lowest WHIPs. However, WHIP does not consider the means by which a hitter reached base. Naturally, home runs hurt pitchers more than walks do. Hit batsmen, errors, or fielder decisions have no impact on a pitcher's WHIP.
 
-## Features in Rolling Average for 100 days
+## Rolling Average Features for 100 days
 The model could be able to more accurately capture trends and patterns in the data over time by building rolling average features on top of the existing characteristics. In a statistical computation known as a rolling average, a set of data is averaged over a predetermined amount of time, with the time period "rolling" ahead as new data become available.
 For each day in the dataset, the model would average the previous 100 days of data, for a rolling average period of 100 days, for instance. The data could be smoothed down in this way to highlight long-term patterns while minimizing short-term swings.
 
-## Difference of Rolling Average for 100 days
+## Difference of Rolling Average Features for 100 days
 One characteristic is simply subtracted from another to produce the difference between two features. The difference would be favorable, for instance, if the home team had a greater value for a specific trait than the visiting squad. However, it's also critical to take into account the potential drawbacks of these derived features, such as the possibility that they may be sensitive to the magnitude of the original characteristics and may not always offer insightful information.
 
 # Feature Engineering
@@ -104,5 +104,15 @@ You can determine the t-value and p-value for the difference between the two mea
 If the difference between the two means is statistically significant, then the predictor is likely to have a strong link with the response variable. This is indicated by a low p-value (less than 0.05).
 Another sign of a significant link between the predictor and responder variable is a high t-value (higher than 1.50).
 
-## 
+## Difference of Mean of Response Plot
+If you want to see how a predictor and response variable are related, you can graph the difference in mean response.
+To find the difference in mean response, divide the mean of the response variable for one set of data by the mean of the response variable for the other set of data. With this, you can figure out how much the two meanings differ from one another.
+The predictor is split into n number of bins to make a plot, and a scatter plot based on the mean of each bin is then added.
+An indicator with a high mean of reaction, as seen below, will have a straight line.
+
+
+
+## Random Forest Variable Importance
+
+
 
