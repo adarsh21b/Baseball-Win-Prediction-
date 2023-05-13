@@ -13,12 +13,17 @@ from plotly import express as px
 from plotly import graph_objects as go
 from scipy import stats
 from scipy.stats import pearsonr
-from sklearn import tree
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    RandomForestClassifier,
+    RandomForestRegressor,
+)
 from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.svm import LinearSVC
+from sklearn.tree import DecisionTreeClassifier
 from sqlalchemy import text
 
 """
@@ -1373,41 +1378,56 @@ def build_model(df, predictors, response):
     X = df[[predictors]].values
     y = df[response].values
 
-    # Train and split data
+    # Train and split data with shuffle = Fasle and sorted using game date and then training testing to avoid cheating
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, shuffle=False, stratify=None, random_state=2
     )
 
-    # Decision Tree Model
-    clf2 = tree.DecisionTreeClassifier()
-    clf2 = clf2.fit(X_train, y_train)
-
-    print("Decision Tree : ", clf2.score(X_test, y_test))
-
-    # Random Forest Model
-    pipeline = Pipeline(
+    # Random Forest
+    pipeline_rf = Pipeline(
         [
-            ("OneHotEncode", StandardScaler()),
-            ("RandomForest", RandomForestClassifier(random_state=100)),
-        ]
+            ("StandardScaler", StandardScaler()),
+            ("RandomForest", RandomForestClassifier(random_state=1234)),
+        ],
     )
-    pipeline.fit(X_train, y_train)
-    Pipeline(
-        steps=[
-            ("OneHotEncode", StandardScaler()),
-            ("RandomForest", RandomForestClassifier(random_state=100)),
-        ]
-    )
-    print("Random Forest Score:", pipeline.score(X_test, y_test))
+    print("Random Forest Score: ", pipeline_rf.score(X_test, y_test))
 
-    # Logistic Regression Model
-    clf = LogisticRegression(random_state=0).fit(X_train, y_train)
-    print("Logistic Regression Score : ", clf.score(X_test, y_test))
+    # Decision Tree
 
-    print(
-        "Almost similar scores are observed in these three above models. Overall I would say by comparing the "
-        "scores RANDOM FOREST would be good algorithm to use"
+    pipeline_dt = Pipeline(
+        [
+            ("StandardScaler", StandardScaler()),
+            ("Decision Tree", DecisionTreeClassifier(random_state=1234)),
+        ],
     )
+    print("Decision Tree Score: ", pipeline_dt.score(X_test, y_test))
+
+    # SVM
+    pipeline_svm = Pipeline(
+        [
+            ("StandardScaler", StandardScaler()),
+            ("SVM", LinearSVC(dual=False, random_state=1234)),
+        ],
+    )
+    print("SVM Score: ", pipeline_svm.score(X_test, y_test))
+
+    # KNN
+    pipeline_knn = Pipeline(
+        [
+            ("StandardScaler", StandardScaler()),
+            ("KNeighbors", KNeighborsClassifier()),
+        ],
+    )
+    print("KNN Score: ", pipeline_knn.score(X_test, y_test))
+
+    # Adaboost
+    pipeline_ada = Pipeline(
+        [
+            ("StandardScaler", StandardScaler()),
+            ("AdaBoost", AdaBoostClassifier(random_state=1234)),
+        ],
+    )
+    print("Adaboost Score: ", pipeline_ada.score(X_test, y_test))
 
 
 def save_dataframe_to_html_pearson(df, plot_link, caption):
