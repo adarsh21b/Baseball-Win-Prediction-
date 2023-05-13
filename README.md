@@ -146,6 +146,8 @@ The brute force approach between the pair has both continuous-continuous predict
 4. diff_mean_resp_weighted_ranking path
 5. Pearson's Correlation value
 
+Fig for cont-cont
+
 Some Good Feature Combination based on Pearson’s Correlation value:
 Batting_Avg_Against_diff vs Hits_per_Nine_Innings_diff
 CERA_diff vs TimesOnBaseDiff
