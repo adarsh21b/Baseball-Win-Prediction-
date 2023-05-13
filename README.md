@@ -118,7 +118,7 @@ You can determine the t-value and p-value for the difference between the two mea
 If the difference between the two means is statistically significant, then the predictor is likely to have a strong link with the response variable. This is indicated by a low p-value (less than 0.05).
 Another sign of a significant link between the predictor and responder variable is a high t-value (higher than 1.50).
 
-![p_t_value](hw_06/readme_pics/Screenshot from 2023-05-09 18-48-58.png)
+![p_t_value](hw_06/readme_pics/PTvalue.png)
 
 ## Difference of Mean of Response Plot
 
