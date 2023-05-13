@@ -46,10 +46,10 @@ Dataset Link:
 - [Mariadb](https://mariadb.com/kb/en/getting-installing-and-upgrading-mariadb/)
 - [SQL](https://mariadb.com/kb/en/sql-statements/) 
 
-## Features and its Importance
+# Features and its Importance
 Feature engineering is a machine learning method that creates new variables not found in the training set by using data. It can provide new features for both supervised and unsupervised learning, with the goal of streamlining and speeding up data conversions while simultaneously enhancing model correctness. The time-effective method of feature engineering for getting consistent results from data preparation makes its significance clear. An unfavorable feature will have a direct impact on your model, regardless of the architecture or the data.
 
-# Features Used in Baseball Dataset
+## Features Used in Baseball Dataset
 1. [Isolated power](https://en.wikipedia.org/wiki/Isolated_power)
 2. [DICE (Defense Component ERA)](https://en.wikipedia.org/wiki/Defense-Independent_Component_ERA)
 3. [WHIP (Walks and Hits Per Innings)](https://en.wikipedia.org/wiki/Walks_plus_hits_per_inning_pitched)
@@ -65,20 +65,20 @@ Feature engineering is a machine learning method that creates new variables not 
 13. [Pythagorean Expectation](https://en.wikipedia.org/wiki/Pythagorean_expectation)
 14. [BABIP (Batting Average on Balls in Play)](https://en.wikipedia.org/wiki/Batting_average_on_balls_in_play)
 
-# About some Important Features
-## DICE
+## About some Important Features
+### DICE
 Similar to CERA, but using a different model that takes into account additional factors including the strikeout rate and walk rate.
 These factors can be very important since they show how well-controlled a pitcher is and how well-equipped they are to get batters out on their own, without the assistance of the defense.If DICE is incorporated into the model as a feature, it may be able to more accurately predict game outcomes based on the relative strength of each team's pitching staff.
 
-## CERA 
+### CERA 
 This measure seeks to forecast a pitcher's earned run average (ERA).
 This could be a key component of the model given that ERA is a common indicator for evaluating pitcher performance. It gives an indication of how many runs an average pitcher gives up throughout a game and is widely used to compare pitchers.
 The relative power of each team's pitching staff could be a key factor in determining the outcome of a game, and the CERA feature could help the model grasp this better. This is accomplished by foreseeing a pitcher's ERA
 
-## WHIP
+### WHIP
 The WHIP is one of the metrics most frequently used to evaluate a pitcher's performance. The formula is simple: divide a pitcher's total innings pitched by the total of his walks and hits. It stands to reason that the best pitchers in the league should be able to stop baserunners because they often have the lowest WHIPs. However, WHIP does not consider the means by which a hitter reached base. Naturally, home runs hurt pitchers more than walks do. Hit batsmen, errors, or fielder decisions have no impact on a pitcher's WHIP.
 
-# Features in Rolling Average for 100 days
+## Features in Rolling Average for 100 days
 The model could be able to more accurately capture trends and patterns in the data over time by building rolling average features on top of the existing characteristics. In a statistical computation known as a rolling average, a set of data is averaged over a predetermined amount of time, with the time period "rolling" ahead as new data become available.
 For each day in the dataset, the model would average the previous 100 days of data, for a rolling average period of 100 days, for instance. The data could be smoothed down in this way to highlight long-term patterns while minimizing short-term swings.
 
