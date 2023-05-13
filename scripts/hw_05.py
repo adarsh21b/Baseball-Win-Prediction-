@@ -13,18 +13,12 @@ from plotly import express as px
 from plotly import graph_objects as go
 from scipy import stats
 from scipy.stats import pearsonr
-from sklearn.ensemble import (
-    AdaBoostClassifier,
-    RandomForestClassifier,
-    RandomForestRegressor,
-)
-from sklearn.metrics import roc_auc_score, roc_curve
+from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.svm import LinearSVC
-from sklearn.tree import DecisionTreeClassifier
 from sqlalchemy import text
 
 """
@@ -1384,89 +1378,69 @@ def build_model(df, predictors, response):
         X, y, test_size=0.2, shuffle=False, stratify=None, random_state=2
     )
 
-    # Random Forest
-    pipeline_rf = Pipeline(
+    # Decision Tree Model
+    clf2 = tree.DecisionTreeClassifier()
+    clf2 = clf2.fit(X_train, y_train)
+
+    print("Decision Tree : ", clf2.score(X_test, y_test))
+
+    # Random Forest Model
+    pipeline = Pipeline(
         [
-            ("StandardScaler", StandardScaler()),
-            ("RandomForest", RandomForestClassifier(random_state=1234)),
-        ],
+            ("OneHotEncode", StandardScaler()),
+            ("RandomForest", RandomForestClassifier(random_state=100)),
+        ]
     )
-    print("Random Forest Score: ", pipeline_rf.score(X_test, y_test))
-
-    # Decision Tree
-
-    pipeline_dt = Pipeline(
-        [
-            ("StandardScaler", StandardScaler()),
-            ("Decision Tree", DecisionTreeClassifier(random_state=1234)),
-        ],
+    pipeline.fit(X_train, y_train)
+    Pipeline(
+        steps=[
+            ("OneHotEncode", StandardScaler()),
+            ("RandomForest", RandomForestClassifier(random_state=100)),
+        ]
     )
-    print("Decision Tree Score: ", pipeline_dt.score(X_test, y_test))
+    print("Random Forest Score:", pipeline.score(X_test, y_test))
 
-    # SVM
-    pipeline_svm = Pipeline(
-        [
-            ("StandardScaler", StandardScaler()),
-            ("SVM", LinearSVC(dual=False, random_state=1234)),
-        ],
-    )
-    print("SVM Score: ", pipeline_svm.score(X_test, y_test))
+    # Logistic Regression Model
+    clf = LogisticRegression(random_state=0).fit(X_train, y_train)
+    print("Logistic Regression Score : ", clf.score(X_test, y_test))
 
-    # KNN
-    pipeline_knn = Pipeline(
-        [
-            ("StandardScaler", StandardScaler()),
-            ("KNeighbors", KNeighborsClassifier()),
-        ],
-    )
-    print("KNN Score: ", pipeline_knn.score(X_test, y_test))
-
-    # Adaboost
-    pipeline_ada = Pipeline(
-        [
-            ("StandardScaler", StandardScaler()),
-            ("AdaBoost", AdaBoostClassifier(random_state=1234)),
-        ],
-    )
-    print("Adaboost Score: ", pipeline_ada.score(X_test, y_test))
-
-    pipelines = [pipeline_rf, pipeline_dt, pipeline_svm, pipeline_knn, pipeline_ada]
-    roc_data = []
-
-    for pipe in pipelines:
-        pipe.fit(X_train, y_train)
-
-    for model in pipelines:
-        y_prob = model.predict_proba(X_test)[:, 1]
-        fpr, tpr, thresholds = roc_curve(y_test, y_prob)
-        auc_score = roc_auc_score(y_test, y_prob)
-        roc_data.append((model.steps[-1][0].upper(), fpr, tpr, auc_score))
-
-    fig = go.Figure()
-
-    for name, fpr, tpr, auc_score in roc_data:
-        fig.add_trace(
-            go.Scatter(
-                x=fpr,
-                y=tpr,
-                mode="lines",
-                name="{} (AUC = {:.2f})".format(name, auc_score),
-            )
-        )
-
-    fig.update_layout(
-        title="Receiver Operating Characteristic (ROC) Curve",
-        xaxis_title="False Positive Rate",
-        yaxis_title="True Positive Rate",
-        legend=dict(x=0.5, y=-0.2),
-        xaxis=dict(range=[0, 1], constrain="domain"),
-        yaxis=dict(range=[0, 1], scaleanchor="x", scaleratio=1),
-        hovermode="closest",
-    )
-
-    with open("adarsh_baseball_stats.html", "a") as f:
-        f.write('<h3 style="font-weight: bold;"> ROC Curve</h3>')
-        f.write(fig)
+    # pipelines = [pipeline_rf, pipeline_dt, pipeline_svm, pipeline_knn, pipeline_ada]
+    # roc_data = []
+    #
+    # for pipe in pipelines:
+    #     pipe.fit(X_train, y_train)
+    #
+    # for model in pipelines:
+    #     y_prob = model.predict_proba(X_test)[:, 1]
+    #     fpr, tpr, thresholds = roc_curve(y_test, y_prob)
+    #     auc_score = roc_auc_score(y_test, y_prob)
+    #     roc_data.append((model.steps[-1][0].upper(), fpr, tpr, auc_score))
+    #
+    # fig = go.Figure()
+    #
+    # for name, fpr, tpr, auc_score in roc_data:
+    #     fig.add_trace(
+    #         go.Scatter(
+    #             x=fpr,
+    #             y=tpr,
+    #             mode="lines",
+    #             name="{} (AUC = {:.2f})".format(name, auc_score),
+    #         )
+    #     )
+    #
+    # fig.update_layout(
+    #     title="Receiver Operating Characteristic (ROC) Curve",
+    #     xaxis_title="False Positive Rate",
+    #     yaxis_title="True Positive Rate",
+    #     legend=dict(x=0.5, y=-0.2),
+    #     xaxis=dict(range=[0, 1], constrain="domain"),
+    #     yaxis=dict(range=[0, 1], scaleanchor="x", scaleratio=1),
+    #     hovermode="closest",
+    # )
+    #
+    # with open("adarsh_baseball_stats.html", "a") as f:
+    #     f.write('<h3 style="font-weight: bold;"> ROC Curve</h3>')
+    #     f.write(fig)
 
 
 def save_dataframe_to_html_pearson(df, plot_link, caption):
