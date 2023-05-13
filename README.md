@@ -85,7 +85,17 @@ For each day in the dataset, the model would average the previous 100 days of da
 ## Difference of Rolling Average for 100 days
 One characteristic is simply subtracted from another to produce the difference between two features. The difference would be favorable, for instance, if the home team had a greater value for a specific trait than the visiting squad. However, it's also critical to take into account the potential drawbacks of these derived features, such as the possibility that they may be sensitive to the magnitude of the original characteristics and may not always offer insightful information.
 
+# Feature Engineering
+A machine learning method called feature engineering uses the data from the training set to generate new variables. By creating additional features for supervised and unsupervised learning, feature engineering can improve model accuracy in addition to streamlining and speeding up data conversions. 
 
+Feature engineering include the following:
+1. Continuous Features - Single Value of Data which could simply be a multiplication or subtraction of a mathematical feature.
+2. Categorical Features - Categorical data, which refers to features that can accept values from a constrained set, is the second most common sort of data. The feature frequently only accepts a single value.
 
-
+All of the features are loaded into a data frame after being created in SQL, and various analyses have been performed. 
+1. Ranking the Features: p_value, t_value
+2. Correlation Metrics: Pearson's correlation, cramer's correlation, Tschuprow's Correlation
+3. Brute Force Analysis: Weighted and Non-Weighted Difference in Mean of Response Ranking
+4. Data Visualization: Violin Plots, Scatter Plots and Histogram
+5. Machine Learning Model 
 
