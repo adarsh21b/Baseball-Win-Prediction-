@@ -18,6 +18,7 @@ from sklearn.ensemble import (
     RandomForestClassifier,
     RandomForestRegressor,
 )
+from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
@@ -343,7 +344,7 @@ def continuous_cont(df, continous_predictors, response_df, response):
     )
     figure.show()
     """
-    with open("adarsh_midterm.html", "a") as f:
+    with open("adarsh_baseball_stats.html", "a") as f:
         f.write('<h1 style="font-weight: bold;">Baseball Statistics</h1>')
         f.write(figure)
 
@@ -1428,6 +1429,44 @@ def build_model(df, predictors, response):
         ],
     )
     print("Adaboost Score: ", pipeline_ada.score(X_test, y_test))
+
+    pipelines = [pipeline_rf, pipeline_dt, pipeline_svm, pipeline_knn, pipeline_ada]
+    roc_data = []
+
+    for pipe in pipelines:
+        pipe.fit(X_train, y_train)
+
+    for model in pipelines:
+        y_prob = model.predict_proba(X_test)[:, 1]
+        fpr, tpr, thresholds = roc_curve(y_test, y_prob)
+        auc_score = roc_auc_score(y_test, y_prob)
+        roc_data.append((model.steps[-1][0].upper(), fpr, tpr, auc_score))
+
+    fig = go.Figure()
+
+    for name, fpr, tpr, auc_score in roc_data:
+        fig.add_trace(
+            go.Scatter(
+                x=fpr,
+                y=tpr,
+                mode="lines",
+                name="{} (AUC = {:.2f})".format(name, auc_score),
+            )
+        )
+
+    fig.update_layout(
+        title="Receiver Operating Characteristic (ROC) Curve",
+        xaxis_title="False Positive Rate",
+        yaxis_title="True Positive Rate",
+        legend=dict(x=0.5, y=-0.2),
+        xaxis=dict(range=[0, 1], constrain="domain"),
+        yaxis=dict(range=[0, 1], scaleanchor="x", scaleratio=1),
+        hovermode="closest",
+    )
+
+    with open("adarsh_baseball_stats.html", "a") as f:
+        f.write('<h3 style="font-weight: bold;"> ROC Curve</h3>')
+        f.write(fig)
 
 
 def save_dataframe_to_html_pearson(df, plot_link, caption):
