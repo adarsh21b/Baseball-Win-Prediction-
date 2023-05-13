@@ -99,5 +99,10 @@ All of the features are loaded into a data frame after being created in SQL, and
 4. Data Visualization: Violin Plots, Scatter Plots and Histogram
 5. Machine Learning Model 
 
+## p_value and t_value
+You can determine the t-value and p-value for the difference between the two means to assess the association between a predictor and the response variable. The number of observations in the sample less the number of parameters being estimated is known as the degrees of freedom, and it is used to determine the p-value.
+If the difference between the two means is statistically significant, then the predictor is likely to have a strong link with the response variable. This is indicated by a low p-value (less than 0.05).
+Another sign of a significant link between the predictor and responder variable is a high t-value (higher than 1.50).
 
+## 
 
