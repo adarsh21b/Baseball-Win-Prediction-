@@ -181,6 +181,51 @@ Engineering and Feature Selection: Data visualization can help with engineering 
 
 Model Performance Evaluation: The performance and behavior of machine learning models can be assessed via visualizations. To compare several models or parameter settings, performance metrics can be plotted. These include accuracy, precision, recall, and ROC curves. Understanding how the model makes predictions can be gained by visualizing model outputs like expected probability or decision boundaries.
 
+![plott](hw_06/readme_pics/plott.png)
+
+# ML Model Building and Evaluation
+
+## Models Used:
+
+**Logistic Regression:**
+Logistic Regression is a linear classification algorithm that models the relationship between the input variables and the probability of a binary outcome.
+It is commonly used for binary classification problems and provides interpretable coefficients to understand the impact of each feature on the prediction.
+
+**K-Nearest Neighbors (KNN):**
+KNN is a non-parametric algorithm that classifies a new data point based on the majority vote of its k nearest neighbors in the feature space.
+It is a versatile algorithm that can handle both classification and regression tasks, but its performance can be sensitive to the choice of k and the distance metric.
+
+**Decision Tree:**
+Decision Tree is a flowchart-like model that predicts the target variable by making a series of decisions based on feature values.
+It is a simple and interpretable algorithm that can handle both categorical and numerical features, but it can be prone to overfitting and may not capture complex relationships.
+
+**Random Forest:**
+Random Forest is an ensemble learning method that combines multiple decision trees to make predictions.
+It reduces overfitting by aggregating the predictions of multiple trees and offers robustness and good generalization performance, but it can be computationally expensive for large datasets.
+
+**Adaboost:**
+Adaboost is an ensemble learning algorithm that combines weak classifiers in a sequential manner, with each subsequent model focusing on the misclassified samples by the previous models.
+It is particularly effective in boosting the performance of weak learners and can handle binary classification and regression tasks.
+
+**Support Vector Machines (SVM):**
+SVM is a powerful and versatile algorithm that separates data points by finding an optimal hyperplane with the maximum margin between classes.
+It can handle linear and non-linear classification tasks through the use of different kernel functions and is known for its ability to handle high-dimensional data.
+
+## Model Performance:
+
+\_\* Logistic Regression - 53.49%
+
+- KNN - 51.21%
+- Decision Tree - 53.45%
+- Random Forest - 53.45%
+- Adaboost - 54.19%
+- SVM - 53.22%\_
+
+## After adding more features and Evaluation:
+
+Model Accuracy Curve:
+![modelaccuracy](hw_06/readme_pics/roc.png)
+
 ## Why Accuracy is reduced when adding more features ?
 
 Adding more features to a machine learning model does not always guarantee an improvement in accuracy. In fact, adding irrelevant or redundant features can often lead to a decrease in accuracy. Here are some reasons why adding more features may reduce accuracy:
@@ -190,3 +235,13 @@ This can result in a drop in accuracy when evaluating the model on test data.
 
 _Curse of Dimensionality:_ As the number of features increases, the data becomes more sparse in the high-dimensional space.
 With limited training data, it becomes harder for the model to find meaningful patterns and relationships between the features and the target variable. This can lead to decreased accuracy and increased computational complexity.
+
+## Future Scope and Limitations
+
+- Improve the Model Accuracy by at least 2-3%.
+- Adding more features and combinations to get the desired result. More DATA
+- Remove High Correlated Predictors
+- Build more ML models
+- Starting Pitching Features
+- Add some more self-made features to see its impact on score and model performance.
+- Perform all analysis in Docker and improve running time of script.
