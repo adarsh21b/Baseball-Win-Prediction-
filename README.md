@@ -29,8 +29,9 @@
 
 Baseball Dataset: The dataset contains Batting, Pitching and Fielding statistics of team. There are numerous tables in this database that contain information about baseball players and teams, including game, box score, team batting, team pitching, and pitcher counts, among others.
 Dataset Link:
+[Baseball_Dataset](https://teaching.mrsharky.com/data/baseball.sql.tar.gz)
 
-(This database provides data from baseball contests that took place between 2008 and 2012.)
+(This database provides data from baseball contests that took place between 2008 and 2012. The dataset is 1.2 Gb in size)
 
 - The goal of this research is to use the baseball dataset to develop new features that may be used to forecast whether the home team will win a specific game or not. We will be doing feature engineering in order to do this.
 - This kind of project could be used in a variety of ways, such as assisting sports analysts and broadcasters in making more precise predictions on-air, assisting fans in making more informed choices about which games to watch or attend, offering teams and players advice on possible strategies and tactics, and more.
@@ -130,6 +131,10 @@ The Pearson correlation can only be used to assess a linear relationship between
 
 ![pearson_corr](hw_06/readme_pics/Correlation-pearson.png)
 
+Another example of features with correlation matrix heatmap of rolling average mean difference of 100 days:
+
+![correlation_heatmap](hw_06/readme_pics/correlation_heatmap.png)
+
 ## Difference of Mean of Response Plot
 
 If you want to see how a predictor and response variable are related, you can graph the difference in mean response.
@@ -138,6 +143,7 @@ The predictor is split into n number of bins to make a plot, and a scatter plot 
 An indicator with a high mean of reaction, as seen below, will have a straight line.
 
 ![mean_of_resp](hw_06/readme_pics/mean_of_resp.png)
+![mean_of_response](hw_06/readme_pics/morp.png)
 
 ## Random Forest Variable Importance
 
@@ -162,7 +168,8 @@ The brute force approach between the pair has both continuous-continuous predict
 
 ![brute_force](hw_06/readme_pics/brute_force.png)
 
-Some Good Feature Combination based on Pearson’s Correlation value:
-Batting_Avg_Against_diff vs Hits_per_Nine_Innings_diff
-CERA_diff vs TimesOnBaseDiff
-Batting_Avg_Against_diff vs Whip_100_diff
+### Some Good Feature Combination based on Pearson’s Correlation value:
+
+- Batting_Avg_Against_diff vs Hits_per_Nine_Innings_diff
+- CERA_diff vs TimesOnBaseDiff
+- Batting_Avg_Against_diff vs Whip_100_diff
