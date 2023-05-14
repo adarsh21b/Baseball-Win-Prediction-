@@ -235,6 +235,14 @@ This can result in a drop in accuracy when evaluating the model on test data.
 _Curse of Dimensionality:_ As the number of features increases, the data becomes more sparse in the high-dimensional space.
 With limited training data, it becomes harder for the model to find meaningful patterns and relationships between the features and the target variable. This can lead to decreased accuracy and increased computational complexity.
 
+## Conclusion
+
+The model's accuracy is only marginally better than the data's 52% home team victory ratio, which falls short of expectations. This model is not advised for use in gambling due to its low accuracy.
+This demonstrates how, while predicting baseball game outcomes, the machine learning model was only just able to edge out the home field advantage.
+Despite the fact that this accuracy may not seem very impressive, it is important to remember that predicting baseball game outcomes is a challenging process that is impacted by a number of factors, including team strength, player performance, and weather conditions.
+By improving one's understanding of the patterns created by the features and adding additional features by applying a combination of brute force, accuracy may be somewhat improved.
+More study is needed to better understand the statistics in the data and provide more useful features to improve model performance.
+
 ## Future Scope and Limitations
 
 - Improve the Model Accuracy by at least 2-3%.
