@@ -120,12 +120,22 @@ Another sign of a significant link between the predictor and responder variable 
 
 ![p_t_value](hw_06/readme_pics/PTvalue.png)
 
+## Correlation Metrics
+
+The test statistic that assesses the statistical association, or relationship, between two continuous variables is called Pearson's correlation coefficient.  
+Because it is based on the method of covariance, it is regarded as the best method for determining the relationship between variables of interest. It provides details on the size of the association or correlation as well as the relationship's slant.
+The Pearson correlation can only be used to assess a linear relationship between two continuous variables (a relationship is only considered linear when a change in one variable is related with a proportional change in the other variable).
+
+![pearson_corr](hw_06/readme_pics/Correlation-pearson.png)
+
 ## Difference of Mean of Response Plot
 
 If you want to see how a predictor and response variable are related, you can graph the difference in mean response.
 To find the difference in mean response, divide the mean of the response variable for one set of data by the mean of the response variable for the other set of data. With this, you can figure out how much the two meanings differ from one another.
 The predictor is split into n number of bins to make a plot, and a scatter plot based on the mean of each bin is then added.
 An indicator with a high mean of reaction, as seen below, will have a straight line.
+
+![mean_of_resp](hw_06/readme_pics/mean_of_resp.png)
 
 ## Random Forest Variable Importance
 
@@ -148,7 +158,7 @@ The brute force approach between the pair has both continuous-continuous predict
 4. diff_mean_resp_weighted_ranking path
 5. Pearson's Correlation value
 
-Fig for cont-cont
+![brute_force](hw_06/readme_pics/brute_force.png)
 
 Some Good Feature Combination based on Pearson’s Correlation value:
 Batting_Avg_Against_diff vs Hits_per_Nine_Innings_diff
