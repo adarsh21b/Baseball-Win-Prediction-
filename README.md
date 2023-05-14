@@ -160,16 +160,33 @@ To discover patterns between the predictors, these analyses are performed on pai
 The top predicting characteristics for the model were a few features that were produced in this research by monitoring those patterns and comparing the predictors.
 The brute force approach between the pair has both continuous-continuous predictors and include the following columns:
 
-1. Predictor 1
-2. Predictor 2
-3. diff_mean_resp_ranking
-4. diff_mean_resp_weighted_ranking path
-5. Pearson's Correlation value
+_**1. Predictor 1 2. Predictor 2 3. diff_mean_resp_ranking 4. diff_mean_resp_weighted_ranking path 5. Pearson's Correlation value**_
 
 ![brute_force](hw_06/readme_pics/brute_force.png)
 
 ### Some Good Feature Combination based on Pearson’s Correlation value:
 
-- Batting_Avg_Against_diff vs Hits_per_Nine_Innings_diff
+\_- Batting_Avg_Against_diff vs Hits_per_Nine_Innings_diff
+
 - CERA_diff vs TimesOnBaseDiff
-- Batting_Avg_Against_diff vs Whip_100_diff
+- Batting*Avg_Against_diff vs Whip_100_diff*
+
+## Data Visualization
+
+Data analysis and machine learning both heavily rely on data visualization. Here are some main arguments in favor of data visualization:
+
+Exploratory Data Analysis: You may learn from and comprehend your data by using data visualization. You can spot patterns, trends, and connections in the data by visualizing it that might not be obvious from just looking at statistics or raw data. It aids in data exploration, finding outliers, and hypothesis generation.
+
+Engineering and Feature Selection: Data visualization can help with engineering and feature selection. You can spot crucial features that significantly influence the result by visualizing the relationships between features and the target variable. The identification of interactions or non-linear correlations that might call for additional feature engineering can also be aided by visualizations.
+
+Model Performance Evaluation: The performance and behavior of machine learning models can be assessed via visualizations. To compare several models or parameter settings, performance metrics can be plotted. These include accuracy, precision, recall, and ROC curves. Understanding how the model makes predictions can be gained by visualizing model outputs like expected probability or decision boundaries.
+
+## Why Accuracy is reduced when adding more features ?
+
+Adding more features to a machine learning model does not always guarantee an improvement in accuracy. In fact, adding irrelevant or redundant features can often lead to a decrease in accuracy. Here are some reasons why adding more features may reduce accuracy:
+
+_Overfitting:_ Adding more features increases the complexity of the model, which can lead to overfitting. Overfitting occurs when the model becomes too specialized to the training data and performs poorly on new, unseen data. The model starts memorizing noise and outliers in the training data, which hurts its generalization ability.
+This can result in a drop in accuracy when evaluating the model on test data.
+
+_Curse of Dimensionality:_ As the number of features increases, the data becomes more sparse in the high-dimensional space.
+With limited training data, it becomes harder for the model to find meaningful patterns and relationships between the features and the target variable. This can lead to decreased accuracy and increased computational complexity.
