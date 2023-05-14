@@ -143,7 +143,7 @@ The predictor is split into n number of bins to make a plot, and a scatter plot 
 An indicator with a high mean of reaction, as seen below, will have a straight line.
 
 ![mean_of_resp](hw_06/readme_pics/mean_of_resp.png)
-![mean_of_response](hw_06/readme_pics/morp.png)
+![mean_of_response](hw_06/readme_pics/morrpp.png)
 
 ## Random Forest Variable Importance
 
@@ -213,7 +213,7 @@ It can handle linear and non-linear classification tasks through the use of diff
 
 ## Model Performance:
 
-\_\* Logistic Regression - 53.49%
+\_- Logistic Regression - 53.49%
 
 - KNN - 51.21%
 - Decision Tree - 53.45%
