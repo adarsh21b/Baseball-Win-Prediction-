@@ -23,6 +23,8 @@
 
 # BASEBALL WIN PREDICTION USING MACHINE LEARNING
 
+![baseball](hw_06/readme_pics/Baseball.jpg)
+
 ## Introduction
 
 Baseball Dataset: The dataset contains Batting, Pitching and Fielding statistics of team. There are numerous tables in this database that contain information about baseball players and teams, including game, box score, team batting, team pitching, and pitcher counts, among others.
