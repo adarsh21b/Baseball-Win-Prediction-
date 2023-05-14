@@ -213,13 +213,12 @@ It can handle linear and non-linear classification tasks through the use of diff
 
 ## Model Performance:
 
-\_- Logistic Regression - 53.49%
-
+- Logistic Regression - 53.49%
 - KNN - 51.21%
 - Decision Tree - 53.45%
 - Random Forest - 53.45%
 - Adaboost - 54.19%
-- SVM - 53.22%\_
+- SVM - 53.22%
 
 ## After adding more features and Evaluation:
 
