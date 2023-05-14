@@ -14,11 +14,18 @@ from plotly import graph_objects as go
 from scipy import stats
 from scipy.stats import pearsonr
 from sklearn import tree
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    RandomForestClassifier,
+    RandomForestRegressor,
+)
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 from sqlalchemy import text
 
 """
@@ -659,7 +666,7 @@ def categorical_conti(df, categorical_predictors, continous_pred):
         )
         """
 
-        with open("adarsh_midterm.html", "a") as f:
+        with open("adarsh_baseball_stats.html", "a") as f:
             f.write(figure)
     return score_df, combinations
 
@@ -1121,7 +1128,7 @@ def categorical_cate(df, categorical_predictors, response_df):
         score_df_c["Correlation value"],
         "Cramer's V Heatmap",
     )
-    with open("adarsh_midterm.html", "a") as f:
+    with open("adarsh_baseball_stats.html", "a") as f:
         f.write(figure_c)
 
     # figure_c.show()
@@ -1131,14 +1138,6 @@ def categorical_cate(df, categorical_predictors, response_df):
         file=file, include_plotlyjs="cdn"
     )
     """
-    # fig = px.density_heatmap(x=df1, y=df2, color_continuous_scale="Viridis", text_auto=True)
-    # title = f" categorical predictor ({df1.name}) by categorical response ({df2.name})"
-    # fig.update_layout(
-    #     title=title,
-    #     xaxis_title=f"Predictor ({df1.name})",
-    #     yaxis_title=f"Predictor ({df2.name})",
-    # )
-    # fig.show()
 
     figure = correlation_matrix(
         score_df["Predictor 1"],
@@ -1147,16 +1146,12 @@ def categorical_cate(df, categorical_predictors, response_df):
         "Tschuprow Heatmap",
     )
 
-    # figure.show()
-
-    # file = f"adarsh21b-plots/{pair[0]}vs{pair[1]}tschuprow.html"
-
     """
     figure.write_html(
         file=file, include_plotlyjs="cdn"
     )
     """
-    with open("adarsh_midterm.html", "a") as f:
+    with open("adarsh_baseball_stats.html", "a") as f:
         f.write(figure)
     return combinations, score_df, score_df_c
 
@@ -1294,7 +1289,7 @@ def save_dataframe_to_html_bruteforce(df, link, caption):
     # Generate an HTML table from the styled DataFrame
     html_table = df_styled.to_html()
 
-    with open("adarsh_midterm.html", "a") as f:
+    with open("adarsh_baseball_stats.html", "a") as f:
         f.write(html_table)
 
 
@@ -1345,7 +1340,7 @@ def save_dataframe_to_html(df, plot_link_mor, plot_link, caption):
     # Generate an HTML table from the styled DataFrame
     html_table = df_styled.to_html()
 
-    with open("adarsh_midterm.html", "a") as f:
+    with open("adarsh_baseball_stats.html", "a") as f:
         f.write(html_table)
 
 
@@ -1369,7 +1364,7 @@ def get_baseball_data():
 
 
 def build_model(df, predictors, response):
-    df.sort_values(by="game_date", ascending=False, inplace=True)
+    df.sort_values(by="game_date", inplace=True)
     X = df[[predictors]].values
     y = df[response].values
 
@@ -1379,68 +1374,102 @@ def build_model(df, predictors, response):
     )
 
     # Decision Tree Model
-    clf2 = tree.DecisionTreeClassifier()
-    clf2 = clf2.fit(X_train, y_train)
 
-    print("Decision Tree : ", clf2.score(X_test, y_test))
-
+    pipeline_dt = Pipeline(
+        [
+            ("OneHotEncode", StandardScaler()),
+            ("DecisionTree", tree.DecisionTreeClassifier()),
+        ]
+    )
     # Random Forest Model
-    pipeline = Pipeline(
+    pipeline_rf = Pipeline(
         [
             ("OneHotEncode", StandardScaler()),
             ("RandomForest", RandomForestClassifier(random_state=100)),
         ]
     )
-    pipeline.fit(X_train, y_train)
-    Pipeline(
-        steps=[
+
+    # Ada Boost
+
+    pipeline_ada = Pipeline(
+        [
             ("OneHotEncode", StandardScaler()),
-            ("RandomForest", RandomForestClassifier(random_state=100)),
+            ("AdaBoost", AdaBoostClassifier(random_state=100)),
         ]
     )
-    print("Random Forest Score:", pipeline.score(X_test, y_test))
 
-    # Logistic Regression Model
-    clf = LogisticRegression(random_state=0).fit(X_train, y_train)
-    print("Logistic Regression Score : ", clf.score(X_test, y_test))
+    # KNN Neighbours
+    pipeline_knn = Pipeline(
+        [
+            ("OneHotEncode", StandardScaler()),
+            ("KNN", KNeighborsClassifier(n_neighbors=11)),
+        ]
+    )
 
-    # pipelines = [pipeline_rf, pipeline_dt, pipeline_svm, pipeline_knn, pipeline_ada]
-    # roc_data = []
-    #
-    # for pipe in pipelines:
-    #     pipe.fit(X_train, y_train)
-    #
-    # for model in pipelines:
-    #     y_prob = model.predict_proba(X_test)[:, 1]
-    #     fpr, tpr, thresholds = roc_curve(y_test, y_prob)
-    #     auc_score = roc_auc_score(y_test, y_prob)
-    #     roc_data.append((model.steps[-1][0].upper(), fpr, tpr, auc_score))
-    #
-    # fig = go.Figure()
-    #
-    # for name, fpr, tpr, auc_score in roc_data:
-    #     fig.add_trace(
-    #         go.Scatter(
-    #             x=fpr,
-    #             y=tpr,
-    #             mode="lines",
-    #             name="{} (AUC = {:.2f})".format(name, auc_score),
-    #         )
-    #     )
-    #
-    # fig.update_layout(
-    #     title="Receiver Operating Characteristic (ROC) Curve",
-    #     xaxis_title="False Positive Rate",
-    #     yaxis_title="True Positive Rate",
-    #     legend=dict(x=0.5, y=-0.2),
-    #     xaxis=dict(range=[0, 1], constrain="domain"),
-    #     yaxis=dict(range=[0, 1], scaleanchor="x", scaleratio=1),
-    #     hovermode="closest",
-    # )
-    #
-    # with open("adarsh_baseball_stats.html", "a") as f:
-    #     f.write('<h3 style="font-weight: bold;"> ROC Curve</h3>')
-    #     f.write(fig)
+    # SVM
+    pipeline_svm = Pipeline(
+        [
+            ("OneHotEncode", StandardScaler()),
+            ("SVM", SVC(probability=True)),
+        ]
+    )
+
+    pipeline_logr = Pipeline(
+        [
+            ("OneHotEncode", StandardScaler()),
+            ("LogisticRegression", LogisticRegression(random_state=0)),
+        ]
+    )
+
+    #  ROC Curve
+
+    pipelines = [
+        pipeline_logr,
+        pipeline_dt,
+        pipeline_svm,
+        pipeline_knn,
+        pipeline_ada,
+        pipeline_rf,
+    ]
+    roc_data = []
+
+    for pipe in pipelines:
+        pipe.fit(X_train, y_train)
+
+    for i, model in enumerate(pipelines):
+
+        y_prob = model.predict_proba(X_test)[:, 1]
+        fpr, tpr, thresholds = roc_curve(y_test, y_prob)
+        auc_score = roc_auc_score(y_test, y_prob)
+        roc_data.append((model.steps[-1][0].upper(), fpr, tpr, auc_score))
+
+    fig = go.Figure()
+
+    for name, fpr, tpr, auc_score in roc_data:
+        fig.add_trace(
+            go.Scatter(
+                x=fpr,
+                y=tpr,
+                mode="lines",
+                name="{} (AUC = {:.2f})".format(name, auc_score),
+            )
+        )
+
+    fig.update_layout(
+        title="Receiver Operating Characteristic (ROC) Curve",
+        xaxis_title="False Positive Rate",
+        yaxis_title="True Positive Rate",
+        legend=dict(x=0.5, y=-0.2),
+        xaxis=dict(range=[0, 1], constrain="domain"),
+        yaxis=dict(range=[0, 1], scaleanchor="x", scaleratio=1),
+        hovermode="closest",
+    )
+
+    file = "adarsh21b-plots/roc_curve.html"
+    file = fig.write_html(file=file, include_plotlyjs="cdn")
+
+    with open("adarsh_baseball_stats.html", "a") as f:
+        f.write(pio.to_html(fig, include_plotlyjs="cdn"))
 
 
 def save_dataframe_to_html_pearson(df, plot_link, caption):
@@ -1481,7 +1510,7 @@ def save_dataframe_to_html_pearson(df, plot_link, caption):
     # Generate an HTML table from the styled DataFrame
     html_table = df_styled.to_html()
 
-    with open("adarsh_midterm.html", "a") as f:
+    with open("adarsh_baseball_stats.html", "a") as f:
         f.write(html_table)
 
 
@@ -1489,10 +1518,11 @@ def main():
     check_directory()
     df = get_baseball_data()
     df = df.reset_index(drop=True)
-    df = df.fillna(df.median())
+    df = df.fillna(0)
     response = "Home_Team_Wins"
     predictors = [
         "Isolated_Power_Diff",
+        "BABIP_diff",
         "DICE_diff",
         "Whip_100_diff",
         "Home_Run_per_Nine_Innings_diff",
@@ -1503,14 +1533,7 @@ def main():
         "TimesOnBaseDiff",
         "StrikeOutToWalkRatio_diff",
     ]
-    # print("dataframe")
-    # print(df)
-    # print("predictors")
-    # print(predictors)
-    # print("response")
-    # print(response)
-    #
-    # print("Response type: " + str(check_response(df, response)))
+
     response_df = df[response]
 
     for i in df.columns:
@@ -1528,9 +1551,6 @@ def main():
         # print("check categorical predictor")
         if check_predictor(df, predictor) == "Categorical":
             categorical_predictors.append(predictor)
-
-    # print("----------------categorical predictors-----------")
-    # print(categorical_predictors)
 
     # continous_continous
     cont_df = pd.DataFrame()
