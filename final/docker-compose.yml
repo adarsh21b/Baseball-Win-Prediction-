@@ -18,6 +18,6 @@ services:
     volumes:
       - .:/app/
     build:
-      context: /home/adarsh/src/BDA602-ML/hw_06/
+      context: /home/adarsh/src/BDA602-ML/final/
       dockerfile: adarash_dock_file.Dockerfile
     command: ["/bin/bash", "bash_scrpt.sh"]

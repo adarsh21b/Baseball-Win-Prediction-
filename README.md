@@ -23,7 +23,7 @@
 
 # BASEBALL WIN PREDICTION USING MACHINE LEARNING
 
-![baseball](hw_06/readme_pics/Baseball.jpg)
+![baseball](final/readme_pics/Baseball.jpg)
 
 ## Introduction
 
@@ -121,7 +121,7 @@ You can determine the t-value and p-value for the difference between the two mea
 If the difference between the two means is statistically significant, then the predictor is likely to have a strong link with the response variable. This is indicated by a low p-value (less than 0.05).
 Another sign of a significant link between the predictor and responder variable is a high t-value (higher than 1.50).
 
-![p_t_value](hw_06/readme_pics/PTvalue.png)
+![p_t_value](final/readme_pics/PTvalue.png)
 
 ## Correlation Metrics
 
@@ -129,11 +129,11 @@ The test statistic that assesses the statistical association, or relationship, b
 Because it is based on the method of covariance, it is regarded as the best method for determining the relationship between variables of interest. It provides details on the size of the association or correlation as well as the relationship's slant.
 The Pearson correlation can only be used to assess a linear relationship between two continuous variables (a relationship is only considered linear when a change in one variable is related with a proportional change in the other variable).
 
-![pearson_corr](hw_06/readme_pics/Correlation-pearson.png)
+![pearson_corr](final/readme_pics/Correlation-pearson.png)
 
 Another example of features with correlation matrix heatmap of rolling average mean difference of 100 days:
 
-![correlation_heatmap](hw_06/readme_pics/correlation_heatmap.png)
+![correlation_heatmap](final/readme_pics/correlation_heatmap.png)
 
 ## Difference of Mean of Response Plot
 
@@ -142,8 +142,8 @@ To find the difference in mean response, divide the mean of the response variabl
 The predictor is split into n number of bins to make a plot, and a scatter plot based on the mean of each bin is then added.
 An indicator with a high mean of reaction, as seen below, will have a straight line.
 
-![mean_of_resp](hw_06/readme_pics/mean_of_resp.png)
-![mean_of_response](hw_06/readme_pics/morrpp.png)
+![mean_of_resp](final/readme_pics/mean_of_resp.png)
+![mean_of_response](final/readme_pics/morrpp.png)
 
 ## Random Forest Variable Importance
 
@@ -162,7 +162,7 @@ The brute force approach between the pair has both continuous-continuous predict
 
 _**1. Predictor 1 2. Predictor 2 3. diff_mean_resp_ranking 4. diff_mean_resp_weighted_ranking path 5. Pearson's Correlation value**_
 
-![brute_force](hw_06/readme_pics/brute_force.png)
+![brute_force](final/readme_pics/brute_force.png)
 
 ### Some Good Feature Combination based on Pearson’s Correlation value:
 
@@ -181,7 +181,7 @@ Engineering and Feature Selection: Data visualization can help with engineering 
 
 Model Performance Evaluation: The performance and behavior of machine learning models can be assessed via visualizations. To compare several models or parameter settings, performance metrics can be plotted. These include accuracy, precision, recall, and ROC curves. Understanding how the model makes predictions can be gained by visualizing model outputs like expected probability or decision boundaries.
 
-![plott](hw_06/readme_pics/plott.png)
+![plott](final/readme_pics/plott.png)
 
 # ML Model Building and Evaluation
 
@@ -223,7 +223,7 @@ It can handle linear and non-linear classification tasks through the use of diff
 ## After adding more features and Evaluation:
 
 Model Accuracy Curve:
-![modelaccuracy](hw_06/readme_pics/roc.png)
+![modelaccuracy](final/readme_pics/roc.png)
 
 ## Why Accuracy is reduced when adding more features ?
 
